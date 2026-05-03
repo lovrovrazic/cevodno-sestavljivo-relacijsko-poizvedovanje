@@ -13,7 +13,7 @@ group {l_returnflag, l_linestatus} (
     avg_qty = average l_quantity,
     avg_price = average l_extendedprice,
     avg_disc = average l_discount,
-    count_order = count avg_disc
+    count_order = count {}
   }
 )
 sort {l_returnflag, l_linestatus}
