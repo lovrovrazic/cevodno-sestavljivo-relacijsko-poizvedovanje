@@ -31,7 +31,7 @@ FROM samples.tpch.part
     p_partkey
 |> LIMIT 100;
 
-
+-- ------------------------------------------------------------------------
 
 FROM samples.tpch.part
 |> JOIN samples.tpch.partsupp ON p_partkey = ps_partkey
@@ -47,6 +47,7 @@ FROM samples.tpch.part
 |> ORDER BY s_acctbal DESC, n_name, s_name, p_partkey
 |> LIMIT 100;
 
+-- ------------------------------------------------------------------------
 
 WITH min_supplycost AS (
     FROM samples.tpch.partsupp
