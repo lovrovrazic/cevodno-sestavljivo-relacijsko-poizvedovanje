@@ -11,3 +11,20 @@ FROM samples.tpch.lineitem
      COUNT(*) AS count_order
    GROUP BY l_returnflag, l_linestatus
 |> ORDER BY l_returnflag, l_linestatus;
+
+
+FROM samples.tpch.lineitem
+|> WHERE l_shipdate <= CAST('1998-09-02' AS date)
+|> EXTEND l_extendedprice * (1 - l_discount) AS disc_price
+|> EXTEND l_extendedprice * (1 - l_discount) * (1 + l_tax) AS charge
+|> AGGREGATE
+     SUM(l_quantity) AS sum_qty,
+     SUM(l_extendedprice) AS sum_base_price,
+     SUM(disc_price) AS sum_disc_price,
+     SUM(charge) AS sum_charge,
+     AVG(l_quantity) AS avg_qty,
+     AVG(l_extendedprice) AS avg_price,
+     AVG(l_discount) AS avg_disc,
+     COUNT(*) AS count_order
+   GROUP BY l_returnflag, l_linestatus
+|> ORDER BY l_returnflag, l_linestatus;
