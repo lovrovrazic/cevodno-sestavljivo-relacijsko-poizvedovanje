@@ -11,6 +11,7 @@ FROM samples.tpch.supplier
 |> SELECT s_suppkey, s_name, s_address, s_phone, total_revenue
 |> ORDER BY s_suppkey;
 
+-- ------------------------------------------------------------------------
 
 WITH revenue AS (
     FROM samples.tpch.lineitem
