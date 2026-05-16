@@ -68,6 +68,7 @@ FROM samples.tpch.supplier
     ON l3.l_orderkey = l1.l_orderkey
     AND l3.l_suppkey != l1.l_suppkey
     AND l3.l_receiptdate > l3.l_commitdate
-|> AGGREGATE COUNT(*) AS numwait GROUP BY s_name
+|> AGGREGATE COUNT(*) AS numwait
+   GROUP BY s_name
 |> ORDER BY numwait DESC, s_name
 |> LIMIT 100;

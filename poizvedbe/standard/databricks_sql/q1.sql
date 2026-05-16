@@ -12,6 +12,7 @@ FROM samples.tpch.lineitem
    GROUP BY l_returnflag, l_linestatus
 |> ORDER BY l_returnflag, l_linestatus;
 
+-- ------------------------------------------------------------------------
 
 FROM samples.tpch.lineitem
 |> WHERE l_shipdate <= CAST('1998-09-02' AS date)
