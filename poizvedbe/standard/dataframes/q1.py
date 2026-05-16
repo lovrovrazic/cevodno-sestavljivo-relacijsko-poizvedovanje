@@ -1,5 +1,3 @@
-import pandas as pd
-
 cutoff = pd.Timestamp("1998-12-01") - pd.Timedelta(days=90)
 
 q1 = (
