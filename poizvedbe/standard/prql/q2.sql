@@ -30,7 +30,7 @@ select {
 sort {-s.s_acctbal, n.n_name, s.s_name, p.p_partkey}
 take 100
 
-
+-- ------------------------------------------------------------------------
 
 from p=part
 join ps=partsupp (p.p_partkey == ps.ps_partkey)
