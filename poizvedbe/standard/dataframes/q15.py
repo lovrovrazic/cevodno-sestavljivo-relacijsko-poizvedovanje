@@ -23,6 +23,8 @@ print(q15)
 
 # ------------------------------------------------------------------------
 
+poprav datum v zgornjega in brisis zgornje
+
 cutoff_bottom = pd.Timestamp("1996-01-01")
 cutoff_top = pd.Timestamp("1996-04-01")
 
