@@ -54,7 +54,7 @@ q2 = (
                    ascending=[False, True, True, True])
       .head(100)
 )
-q2
+print(q2)
 
 # ------------------------------------------------------------------------
 
@@ -86,4 +86,4 @@ q2_corr = (
       .head(100)
       .reset_index(drop=True)
 )
-q2_corr
+print(q2_corr)
