@@ -5,9 +5,7 @@ q15 = (
     .groupby("l_suppkey", as_index=False)["revenue"].sum()
     .rename(columns={"l_suppkey": "supplier_no", "revenue": "total_revenue"})
     .loc[lambda d: d["total_revenue"] == d["total_revenue"].max()]
-    .merge(supplier, left_on="supplier_no", right_on="s_suppkey")
-    [["s_suppkey", "s_name", "s_address", "s_phone", "total_revenue"]]
+    .merge(supplier, left_on="supplier_no", right_on="s_suppkey")[["s_suppkey", "s_name", "s_address", "s_phone", "total_revenue"]]
     .sort_values("s_suppkey")
-    .reset_index(drop=True)
 )
-q15
+print(q15)
