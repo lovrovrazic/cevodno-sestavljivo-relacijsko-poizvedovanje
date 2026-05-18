@@ -1,5 +1,5 @@
 q15 = (
-    lineitem_q15
+    lineitem
     .loc[lambda d: (d["l_shipdate"] >= date(1996, 1, 1)) & (d["l_shipdate"] < date(1996, 4, 1))]
     .assign(revenue=lambda d: d["l_extendedprice"] * (1 - d["l_discount"]))
     .groupby("l_suppkey", as_index=False)["revenue"].sum()
