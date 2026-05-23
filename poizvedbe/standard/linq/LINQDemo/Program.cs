@@ -1,29 +1,36 @@
 ﻿using System;
 using System.Data.Odbc;
-using System.Linq;
-using Dapper;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
 
-namespace DatabricksMacDemo;
+namespace LINQDemo;
 
 class Program
 {
     static void Main(string[] args)
     {
-        // On Mac, point directly to the installed .dylib file
+
+    	var config = new ConfigurationBuilder()
+            .AddUserSecrets(Assembly.GetExecutingAssembly())
+            .Build();
+
+		string host = config["Databricks:Host"];
+        string httpPath = config["Databricks:HTTPPath"];
+        string token = config["Databricks:Token"];
         string macOdbcDriverPath = "/Library/databricks/databricksodbc/lib/libdatabricksodbc.dylib";
 
         string connectionString = 
             $"Driver={macOdbcDriverPath};" +
-             "Host=adb-xxxxxxxxxxxxxxxx.x.azuredatabricks.net;" + // Your Databricks workspace host
-             "Port=443;" +
-             "HTTPPath=sql/protocolv1/o/XXXXXXX/XXXXXXX;" +      // From connection details
-             "ThriftTransport=2;" +
-             "SSL=1;" +
-             "AuthMech=3;" +
-             "UID=token;" +
-             $"PWD=dapiYourPersonalAccessTokenHere;" +
-             "Catalog=samples;" +
-             "ConnSchema=tchp;";
+            $"Host={host};" + 
+            "Port=443;" +
+            $"HTTPPath={httpPath};" +
+            "ThriftTransport=2;" +
+            "SSL=1;" +
+            "AuthMech=3;" +
+            "UID=token;" +
+            $"PWD={token};" +
+            "Catalog=samples;" +
+            "ConnSchema=tchp;";
 
         Console.WriteLine("Connecting to Databricks from macOS...");
 
@@ -33,33 +40,13 @@ class Program
             connection.Open();
             Console.WriteLine("Successfully connected!");
 
-            // 1. Fetch data through the free driver using raw SQL
-            string sql = "SELECT * FROM your_table_name LIMIT 100";
-            var rawData = connection.Query<TchpData>(sql).ToList();
+            var q1 = new Q1();
+            q1.runQuery(connection);
 
-            // 2. Perform your clean LINQ queries locally in memory
-            var filtered = from item in rawData
-                           where item.MetricName.Contains("test", StringComparison.OrdinalIgnoreCase)
-                           select item;
-
-            foreach (var row in filtered)
-            {
-                Console.WriteLine($"ID: {row.Id} | Metric: {row.MetricName}");
-            }
         }
         catch (Exception ex)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Connection failed: {ex.Message}");
-            Console.ResetColor();
         }
     }
-}
-
-// Simple data model mapping to your schema objects
-public class TchpData
-{
-    public string Id { get; set; }
-    public string MetricName { get; set; }
-    public double Value { get; set; }
 }
