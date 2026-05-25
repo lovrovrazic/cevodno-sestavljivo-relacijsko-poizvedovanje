@@ -20,7 +20,7 @@ class Q2
                         join s in suppliers on ps.ps_suppkey equals s.s_suppkey
                         join n in nations on s.s_nationkey equals n.n_nationkey
                         join r in regions on n.n_regionkey equals r.r_regionkey
-                        where r.r_name == targetRegion
+                        where r.r_name == "EUROPE"
                         group ps.ps_supplycost by ps.ps_partkey into g
                         select new { PartKey = g.Key, MinCost = g.Min() })
                        .ToDictionary(x => x.PartKey, x => x.MinCost);
