@@ -16,11 +16,6 @@ class Q2
         var nations = connection.Query<Nation>("SELECT n_nationkey, n_name, n_regionkey FROM samples.tpch.nation").ToList();
         var regions = connection.Query<Region>("SELECT r_regionkey, r_name FROM samples.tpch.region").ToList();
 
-        int targetSize = 15;
-        string targetType = "BRASS";
-        string targetRegion = "EUROPE";
-
-        // Translate the Correlated Subquery: Find the minimum supply cost per part in the target region
         var minCosts = (from ps in partsupps
                         join s in suppliers on ps.ps_suppkey equals s.s_suppkey
                         join n in nations on s.s_nationkey equals n.n_nationkey
@@ -30,14 +25,13 @@ class Q2
                         select new { PartKey = g.Key, MinCost = g.Min() })
                        .ToDictionary(x => x.PartKey, x => x.MinCost);
 
-        // Main Query execution matching the outer SQL logic
         var filtered = (from p in parts
-                        where p.p_size == targetSize && p.p_type.EndsWith(targetType) // LIKE '%[TYPE]'
+                        where p.p_size == 15 && p.p_type.EndsWith("BRASS")
                         join ps in partsupps on p.p_partkey equals ps.ps_partkey
                         join s in suppliers on ps.ps_suppkey equals s.s_suppkey
                         join n in nations on s.s_nationkey equals n.n_nationkey
                         join r in regions on n.n_regionkey equals r.r_regionkey
-                        where r.r_name == targetRegion 
+                        where r.r_name == "EUROPE" 
                            && minCosts.TryGetValue(p.p_partkey, out var minCost) 
                            && ps.ps_supplycost == minCost
                         orderby s.s_acctbal descending, n.n_name, s.s_name, p.p_partkey
@@ -52,7 +46,7 @@ class Q2
                             s.s_phone,
                             s.s_comment
                         })
-                        .Take(100) // LIMIT 100
+                        .Take(100)
                         .ToList();
 
         Utility.Print(filtered);

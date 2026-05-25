@@ -10,11 +10,11 @@ class Q1
 
 	public void runQuery(OdbcConnection connection)
 	{
-		string sql = "SELECT * FROM samples.tpch.lineitem WHERE l_shipdate <= CAST('1992-09-02' AS date)";
+		string sql = "SELECT * FROM samples.tpch.lineitem";
         var lineitem = connection.Query<LineItem>(sql).ToList();
 
 		var filtered = from item in lineitem
-					   where item.l_shipdate <= new DateTime(1992, 9, 2)
+					   where item.l_shipdate <= new DateTime(1998, 9, 2)
                        group item by new { item.l_returnflag, item.l_linestatus } into g
                        orderby g.Key.l_returnflag, g.Key.l_linestatus
                        select new
