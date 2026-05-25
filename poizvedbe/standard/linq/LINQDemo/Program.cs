@@ -40,8 +40,13 @@ class Program
             connection.Open();
             Console.WriteLine("Successfully connected!");
 
-            var q1 = new Q1();
-            q1.runQuery(connection);
+            // var q1 = new Q1();
+            // Console.WriteLine("Starting Q1...");
+            // q1.runQuery(connection);
+
+            var q2 = new Q2();
+            Console.WriteLine("Starting Q2...");
+            q2.runQuery(connection);
 
         }
         catch (Exception ex)
