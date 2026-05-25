@@ -49,6 +49,78 @@ class Q2
                         .Take(100)
                         .ToList();
 
+
+        // var filtered_alt = (from p in parts
+        //                 where p.p_size == targetSize && p.p_type.EndsWith(targetType)
+        //                 join ps in partsupps on p.p_partkey equals ps.ps_partkey
+        //                 join s in suppliers on ps.ps_suppkey equals s.s_suppkey
+        //                 join n in nations on s.s_nationkey equals n.n_nationkey
+        //                 join r in regions on n.n_regionkey equals r.n_regionkey
+        //                 where r.r_name == targetRegion 
+                           
+        //                    // --- START CORRELATED SUBQUERY ---
+        //                    && ps.ps_supplycost == (
+        //                        from psSub in partsupps
+        //                        join sSub in suppliers on psSub.ps_suppkey equals sSub.s_suppkey
+        //                        join nSub in nations on sSub.s_nationkey equals nSub.n_nationkey
+        //                        join rSub in regions on nSub.n_regionkey equals rSub.n_regionkey
+        //                        where rSub.r_name == targetRegion 
+        //                           && psSub.ps_partkey == p.p_partkey // <-- The Correlation Link
+        //                        select psSub.ps_supplycost
+        //                    ).Min()
+        //                    // --- END CORRELATED SUBQUERY ---
+
+        //                 orderby s.s_acctbal descending, n.n_name, s.s_name, p.p_partkey
+        //                 select new
+        //                 {
+        //                     s.s_acctbal,
+        //                     s.s_name,
+        //                     n.n_name,
+        //                     p.p_partkey,
+        //                     p.p_mfgr,
+        //                     s.s_address,
+        //                     s.s_phone,
+        //                     s.s_comment
+        //                 })
+        //                 .Take(100)
+        //                 .ToList();
+
         Utility.Print(filtered);
     }
 }
+
+
+var filtered = (from p in parts
+                where p.p_size == targetSize && p.p_type.EndsWith(targetType)
+                join ps in partsupps on p.p_partkey equals ps.ps_partkey
+                join s in suppliers on ps.ps_suppkey equals s.s_suppkey
+                join n in nations on s.s_nationkey equals n.n_nationkey
+                join r in regions on n.n_regionkey equals r.n_regionkey
+                where r.r_name == targetRegion 
+                   
+                   // --- START CORRELATED SUBQUERY ---
+                   && ps.ps_supplycost == (
+                       from psSub in partsupps
+                       join sSub in suppliers on psSub.ps_suppkey equals sSub.s_suppkey
+                       join nSub in nations on sSub.s_nationkey equals nSub.n_nationkey
+                       join rSub in regions on nSub.n_regionkey equals rSub.n_regionkey
+                       where rSub.r_name == targetRegion 
+                          && psSub.ps_partkey == p.p_partkey // <-- The Correlation Link
+                       select psSub.ps_supplycost
+                   ).Min()
+                   // --- END CORRELATED SUBQUERY ---
+
+                orderby s.s_acctbal descending, n.n_name, s.s_name, p.p_partkey
+                select new
+                {
+                    s.s_acctbal,
+                    s.s_name,
+                    n.n_name,
+                    p.p_partkey,
+                    p.p_mfgr,
+                    s.s_address,
+                    s.s_phone,
+                    s.s_comment
+                })
+                .Take(100)
+                .ToList();
