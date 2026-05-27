@@ -44,9 +44,13 @@ class Program
             // Console.WriteLine("Starting Q1...");
             // q1.runQuery(connection);
 
-            var q2 = new Q2();
-            Console.WriteLine("Starting Q2...");
-            q2.runQuery(connection);
+            // var q2 = new Q2();
+            // Console.WriteLine("Starting Q2...");
+            // q2.runQuery(connection);
+
+            var q13 = new Q13();
+            Console.WriteLine("Starting Q13...");
+            q13.runQuery(connection);
 
         }
         catch (Exception ex)
