@@ -16,6 +16,9 @@ class Q21
         var nations = connection.Query<Nation>("SELECT n_nationkey, n_name FROM samples.tpch.nation").ToList();
 
         Console.WriteLine("Received tables from Databricks...");
+
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         
         var filtered = (from s in suppliers
                         // Filter lineitems to only late deliveries during the join
@@ -41,7 +44,7 @@ class Q21
                         .Take(100)
                         .ToList();
 
-        // var filtered = (from s in suppliers
+        // var filtered_ = (from s in suppliers
         //                 join l1 in lineitems on s.s_suppkey equals l1.l_suppkey
         //                 join o in orders on l1.l_orderkey equals o.o_orderkey
         //                 join n in nations on s.s_nationkey equals n.n_nationkey
@@ -62,6 +65,9 @@ class Q21
         //                 .Take(10)
         //                 .ToList();
 
+        stopwatch.Stop();
+        TimeSpan timeTaken = stopwatch.Elapsed;
+        Console.WriteLine($"Time elapsed: {timeTaken.TotalSeconds} seconds");
 
         Utility.Print(filtered);
 	}
