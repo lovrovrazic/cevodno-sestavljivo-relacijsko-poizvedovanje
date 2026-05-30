@@ -15,7 +15,7 @@ class Q15
         var lineitems = connection.Query<LineItem>("SELECT l_suppkey, l_extendedprice, l_discount, l_shipdate FROM samples.tpch.lineitem").ToList();
 
         var filtered = (from l in lineitems
-                        where l.l_shipdate >= startDate && l.l_shipdate < endDate
+                        where l.l_shipdate >= new DateTime(1996, 1, 1) && l.l_shipdate < new DateTime(1996, 4, 1)
                         group l by l.l_suppkey into g
                         select new
                         {
