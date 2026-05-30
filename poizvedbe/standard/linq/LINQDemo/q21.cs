@@ -19,11 +19,12 @@ class Q21
 
         Console.WriteLine("Received tables from Databricks...");
 
-        // Converts the list into a JSON string
-        string jsonString = JsonSerializer.Serialize(lineitems);
-    
-        // Writes that string to a file on your hard drive
-        File.WriteAllText("lineitems.json", jsonString);
+        // 'using' statement ensures the file is closed properly when done
+        using (FileStream createStream = File.Create("lineitems.json"))
+        {
+            // Serialize directly into the file stream, bypassing RAM limits
+            JsonSerializer.Serialize(createStream, largeList);
+        }
         Console.WriteLine($"Saved to: {Path.GetFullPath(fileName)}");
 
         // Stopwatch stopwatch = new Stopwatch();
