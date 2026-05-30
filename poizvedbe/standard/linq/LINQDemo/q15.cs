@@ -14,6 +14,29 @@ class Q15
         var suppliers = connection.Query<Supplier>("SELECT s_suppkey, s_name, s_address, s_phone FROM samples.tpch.supplier").ToList();
         var lineitems = connection.Query<LineItem>("SELECT l_suppkey, l_extendedprice, l_discount, l_shipdate FROM samples.tpch.lineitem").ToList();
 
+        var filtered = (from l in lineitems
+                        where l.l_shipdate >= startDate && l.l_shipdate < endDate
+                        group l by l.l_suppkey into g
+                        select new
+                        {
+                            SupplierNo = g.Key,
+                            TotalRevenue = g.Sum(item => item.l_extendedprice * (1 - item.l_discount))
+                        } into revenueStream
+                        group revenueStream by 1 into globalGroup
+                        from r in globalGroup
+                        let maxRevenue = globalGroup.Any() ? globalGroup.Max(x => x.TotalRevenue) : 0
+                        where r.TotalRevenue == maxRevenue
+                        join s in suppliers on r.SupplierNo equals s.s_suppkey
+                        orderby s.s_suppkey
+                        select new
+                        {
+                            s.s_suppkey,
+                            s.s_name,
+                            s.s_address,
+                            s.s_phone,
+                            r.TotalRevenue
+                        }).ToList();
+
         // // 1. Mimic 'revenue0' view: Group lineitems by supplier and calculate total revenue
         // var revenue0 = (from l in lineitems
         //                 where l.l_shipdate >= new DateTime(1996, 1, 1) && l.l_shipdate < new DateTime(1996, 4, 1)
@@ -40,45 +63,44 @@ class Q15
         //                     r.TotalRevenue
         //                 }).ToList();
 
-        var filtered = lineitems
-            // |> WHERE l_shipdate >= ... AND l_shipdate < ...
-            .Where(l => l.l_shipdate >= new DateTime(1996, 1, 1) && l.l_shipdate < new DateTime(1996, 4, 1))
-            
-            // |> AGGREGATE SUM(...) GROUP BY l_suppkey
-            .GroupBy(l => l.l_suppkey)
-            
-            // |> SELECT l_suppkey AS supplier_no, total_revenue
-            .Select(g => new 
-            { 
-                SupplierNo = g.Key, 
-                TotalRevenue = g.Sum(item => item.l_extendedprice * (1 - item.l_discount)) 
-            })
-            
-            // |> EXTEND MAX(total_revenue) OVER() AS max_revenue & WHERE total_revenue = max_revenue
-            .GroupBy(r => 1) 
-            .SelectMany(g => 
-            {
-                var maxRevenue = g.Any() ? g.Max(x => x.TotalRevenue) : 0;
-                return g.Where(x => x.TotalRevenue == maxRevenue);
-            })
-            
-            // |> JOIN samples.tpch.supplier ON supplier_no = s_suppkey
-            // |> SELECT s_suppkey, s_name, s_address, s_phone, total_revenue
-            .Join(suppliers, 
-                  r => r.SupplierNo, 
-                  s => s.s_suppkey, 
-                  (r, s) => new 
-                  {
-                      s.s_suppkey,
-                      s.s_name,
-                      s.s_address,
-                      s.s_phone,
-                      r.TotalRevenue
-                  })
-            
-            // |> ORDER BY s_suppkey;
-            .OrderBy(result => result.s_suppkey)
-            .ToList();
+// // Single continuous LINQ pipeline using Query Syntax
+//         var filtered = (from l in lineitems
+//                         // |> WHERE l_shipdate >= ... AND l_shipdate < ...
+//                         where l.l_shipdate >= startDate && l.l_shipdate < endDate
+                        
+//                         // |> AGGREGATE SUM(...) GROUP BY l_suppkey
+//                         group l by l.l_suppkey into g
+                        
+//                         // |> SELECT l_suppkey AS supplier_no, total_revenue
+//                         select new
+//                         {
+//                             SupplierNo = g.Key,
+//                             TotalRevenue = g.Sum(item => item.l_extendedprice * (1 - item.l_discount))
+//                         } into revenueStream
+                        
+//                         // |> EXTEND MAX(total_revenue) OVER() AS max_revenue
+//                         group revenueStream by 1 into globalGroup
+//                         from r in globalGroup
+//                         let maxRevenue = globalGroup.Any() ? globalGroup.Max(x => x.TotalRevenue) : 0
+                        
+//                         // |> WHERE total_revenue = max_revenue
+//                         where r.TotalRevenue == maxRevenue
+                        
+//                         // |> JOIN samples.tpch.supplier ON supplier_no = s_suppkey
+//                         join s in suppliers on r.SupplierNo equals s.s_suppkey
+                        
+//                         // |> ORDER BY s_suppkey
+//                         orderby s.s_suppkey
+                        
+//                         // |> SELECT s_suppkey, s_name, s_address, s_phone, total_revenue
+//                         select new
+//                         {
+//                             s.s_suppkey,
+//                             s.s_name,
+//                             s.s_address,
+//                             s.s_phone,
+//                             r.TotalRevenue
+//                         }).ToList();
 
         Utility.Print(filtered);
 	}
