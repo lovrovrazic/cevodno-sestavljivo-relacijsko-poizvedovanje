@@ -17,49 +17,85 @@ class Q21
         // var orders = connection.Query<Orders>("SELECT o_orderkey, o_orderstatus FROM samples.tpch.orders where o_orderdate >= date'1995-05-01'").ToList();
         // var nations = connection.Query<Nation>("SELECT n_nationkey, n_name FROM samples.tpch.nation").ToList();
 
-        Console.WriteLine("Received tables from Databricks...");
+        // Console.WriteLine("Received tables from Databricks...");
 
 
+        var suppliers;
+        var lineitems;
+        var orders;
+        var nations;
 
-        // 'using' statement ensures the file is closed properly when done
-        using (FileStream createStream = File.Create("nations.json"))
+
+        // // 'using' statement ensures the file is closed properly when done
+        // using (FileStream createStream = File.Create("nations.json"))
+        // {
+        //     // Serialize directly into the file stream, bypassing RAM limits
+        //     JsonSerializer.Serialize(createStream, nations);
+        // }
+        // Console.WriteLine($"Saved to: {Path.GetFullPath("nations.json")}");
+
+
+        if (!File.Exists("suppliers.json")) return new List<string>();
+
+        using (FileStream openStream = File.OpenRead("suppliers.json"))
         {
-            // Serialize directly into the file stream, bypassing RAM limits
-            JsonSerializer.Serialize(createStream, nations);
+            // Deserialize directly from the file stream
+            suppliers = JsonSerializer.Deserialize<List<string>>(openStream);
         }
-        Console.WriteLine($"Saved to: {Path.GetFullPath("nations.json")}");
 
 
+        if (!File.Exists("lineitems.json")) return new List<string>();
+
+        using (FileStream openStream = File.OpenRead("lineitems.json"))
+        {
+            // Deserialize directly from the file stream
+            lineitems = JsonSerializer.Deserialize<List<string>>(openStream);
+        }
+
+
+        if (!File.Exists("orders.json")) return new List<string>();
+
+        using (FileStream openStream = File.OpenRead("orders.json"))
+        {
+            // Deserialize directly from the file stream
+            orders = JsonSerializer.Deserialize<List<string>>(openStream);
+        }
+
+
+        if (!File.Exists("nations.json")) return new List<string>();
+
+        using (FileStream openStream = File.OpenRead("nations.json"))
+        {
+            // Deserialize directly from the file stream
+            nations = JsonSerializer.Deserialize<List<string>>(openStream);
+        }
+
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         
-
-
-
-        // Stopwatch stopwatch = new Stopwatch();
-        // stopwatch.Start();
-        
-        // var filtered = (from s in suppliers
-        //                 // Filter lineitems to only late deliveries during the join
-        //                 join l1 in lineitems.Where(l => l.l_receiptdate > l.l_commitdate) 
-        //                     on s.s_suppkey equals l1.l_suppkey
-        //                 // Filter orders to only 'F' status during the join
-        //                 join o in orders.Where(o => o.o_orderstatus == "F") 
-        //                     on l1.l_orderkey equals o.o_orderkey
-        //                 // Filter nations to 'SAUDI ARABIA' during the join
-        //                 join n in nations.Where(n => n.n_name == "SAUDI ARABIA") 
-        //                     on s.s_nationkey equals n.n_nationkey
-        //                 // The correlated subqueries (EXISTS / NOT EXISTS) must remain here 
-        //                 // because they depend on cross-referencing the active 'l1' iteration variable
-        //                 where lineitems.Any(l2 => l2.l_orderkey == l1.l_orderkey && l2.l_suppkey != l1.l_suppkey)
-        //                    && !lineitems.Any(l3 => l3.l_orderkey == l1.l_orderkey && l3.l_suppkey != l1.l_suppkey && l3.l_receiptdate > l3.l_commitdate)
-        //                 group s by s.s_name into g
-        //                 orderby g.Count() descending, g.Key
-        //                 select new 
-        //                 { 
-        //                     s_name = g.Key, 
-        //                     numwait = g.Count() 
-        //                 })
-        //                 .Take(100)
-        //                 .ToList();
+        var filtered = (from s in suppliers
+                        // Filter lineitems to only late deliveries during the join
+                        join l1 in lineitems.Where(l => l.l_receiptdate > l.l_commitdate) 
+                            on s.s_suppkey equals l1.l_suppkey
+                        // Filter orders to only 'F' status during the join
+                        join o in orders.Where(o => o.o_orderstatus == "F") 
+                            on l1.l_orderkey equals o.o_orderkey
+                        // Filter nations to 'SAUDI ARABIA' during the join
+                        join n in nations.Where(n => n.n_name == "SAUDI ARABIA") 
+                            on s.s_nationkey equals n.n_nationkey
+                        // The correlated subqueries (EXISTS / NOT EXISTS) must remain here 
+                        // because they depend on cross-referencing the active 'l1' iteration variable
+                        where lineitems.Any(l2 => l2.l_orderkey == l1.l_orderkey && l2.l_suppkey != l1.l_suppkey)
+                           && !lineitems.Any(l3 => l3.l_orderkey == l1.l_orderkey && l3.l_suppkey != l1.l_suppkey && l3.l_receiptdate > l3.l_commitdate)
+                        group s by s.s_name into g
+                        orderby g.Count() descending, g.Key
+                        select new 
+                        { 
+                            s_name = g.Key, 
+                            numwait = g.Count() 
+                        })
+                        .Take(100)
+                        .ToList();
 
         // // var filtered_ = (from s in suppliers
         // //                 join l1 in lineitems on s.s_suppkey equals l1.l_suppkey
@@ -82,10 +118,10 @@ class Q21
         // //                 .Take(10)
         // //                 .ToList();
 
-        // stopwatch.Stop();
-        // TimeSpan timeTaken = stopwatch.Elapsed;
-        // Console.WriteLine($"Time elapsed: {timeTaken.TotalSeconds} seconds");
+        stopwatch.Stop();
+        TimeSpan timeTaken = stopwatch.Elapsed;
+        Console.WriteLine($"Time elapsed: {timeTaken.TotalSeconds} seconds");
 
-        // Utility.Print(filtered);
+        Utility.Print(filtered);
 	}
 }
