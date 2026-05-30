@@ -10,7 +10,6 @@ class Q15
 
 	public void runQuery(OdbcConnection connection)
 	{
-        // Fetch required datasets
         var suppliers = connection.Query<Supplier>("SELECT s_suppkey, s_name, s_address, s_phone FROM samples.tpch.supplier").ToList();
         var lineitems = connection.Query<LineItem>("SELECT l_suppkey, l_extendedprice, l_discount, l_shipdate FROM samples.tpch.lineitem").ToList();
 
@@ -63,44 +62,44 @@ class Q15
         //                     r.TotalRevenue
         //                 }).ToList();
 
-// // Single continuous LINQ pipeline using Query Syntax
-//         var filtered = (from l in lineitems
-//                         // |> WHERE l_shipdate >= ... AND l_shipdate < ...
-//                         where l.l_shipdate >= startDate && l.l_shipdate < endDate
+        // // Single continuous LINQ pipeline using Query Syntax
+        // var filtered = (from l in lineitems
+        //                 // |> WHERE l_shipdate >= ... AND l_shipdate < ...
+        //                 where l.l_shipdate >= startDate && l.l_shipdate < endDate
                         
-//                         // |> AGGREGATE SUM(...) GROUP BY l_suppkey
-//                         group l by l.l_suppkey into g
+        //                 // |> AGGREGATE SUM(...) GROUP BY l_suppkey
+        //                 group l by l.l_suppkey into g
                         
-//                         // |> SELECT l_suppkey AS supplier_no, total_revenue
-//                         select new
-//                         {
-//                             SupplierNo = g.Key,
-//                             TotalRevenue = g.Sum(item => item.l_extendedprice * (1 - item.l_discount))
-//                         } into revenueStream
+        //                 // |> SELECT l_suppkey AS supplier_no, total_revenue
+        //                 select new
+        //                 {
+        //                     SupplierNo = g.Key,
+        //                     TotalRevenue = g.Sum(item => item.l_extendedprice * (1 - item.l_discount))
+        //                 } into revenueStream
                         
-//                         // |> EXTEND MAX(total_revenue) OVER() AS max_revenue
-//                         group revenueStream by 1 into globalGroup
-//                         from r in globalGroup
-//                         let maxRevenue = globalGroup.Any() ? globalGroup.Max(x => x.TotalRevenue) : 0
+        //                 // |> EXTEND MAX(total_revenue) OVER() AS max_revenue
+        //                 group revenueStream by 1 into globalGroup
+        //                 from r in globalGroup
+        //                 let maxRevenue = globalGroup.Any() ? globalGroup.Max(x => x.TotalRevenue) : 0
                         
-//                         // |> WHERE total_revenue = max_revenue
-//                         where r.TotalRevenue == maxRevenue
+        //                 // |> WHERE total_revenue = max_revenue
+        //                 where r.TotalRevenue == maxRevenue
                         
-//                         // |> JOIN samples.tpch.supplier ON supplier_no = s_suppkey
-//                         join s in suppliers on r.SupplierNo equals s.s_suppkey
+        //                 // |> JOIN samples.tpch.supplier ON supplier_no = s_suppkey
+        //                 join s in suppliers on r.SupplierNo equals s.s_suppkey
                         
-//                         // |> ORDER BY s_suppkey
-//                         orderby s.s_suppkey
+        //                 // |> ORDER BY s_suppkey
+        //                 orderby s.s_suppkey
                         
-//                         // |> SELECT s_suppkey, s_name, s_address, s_phone, total_revenue
-//                         select new
-//                         {
-//                             s.s_suppkey,
-//                             s.s_name,
-//                             s.s_address,
-//                             s.s_phone,
-//                             r.TotalRevenue
-//                         }).ToList();
+        //                 // |> SELECT s_suppkey, s_name, s_address, s_phone, total_revenue
+        //                 select new
+        //                 {
+        //                     s.s_suppkey,
+        //                     s.s_name,
+        //                     s.s_address,
+        //                     s.s_phone,
+        //                     r.TotalRevenue
+        //                 }).ToList();
 
         Utility.Print(filtered);
 	}
