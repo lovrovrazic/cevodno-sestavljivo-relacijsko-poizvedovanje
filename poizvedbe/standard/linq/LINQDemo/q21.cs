@@ -4,13 +4,14 @@ using System.Linq;
 using Dapper;
 using System.Text.Json;
 using System.IO;
+using System.Diagnostics;
 
 namespace LINQDemo;
 
 class Q21
 {
 
-	public void runQuery(OdbcConnection connection)
+	public void runQuery(OdbcConnection connection = null)
 	{
         // var suppliers = connection.Query<Supplier>("SELECT s_suppkey, s_name, s_address, s_phone, s_nationkey FROM samples.tpch.supplier").ToList();
         // var lineitems = connection.Query<LineItem>("SELECT l_orderkey, l_suppkey, l_receiptdate, l_commitdate FROM samples.tpch.lineitem where l_shipdate >= date'1995-05-01'").ToList();
@@ -20,10 +21,10 @@ class Q21
         // Console.WriteLine("Received tables from Databricks...");
 
 
-        var suppliers;
-        var lineitems;
-        var orders;
-        var nations;
+        var suppliers = new List<Supplier>();
+        var lineitems = new List<LineItem>();
+        var orders = new List<Orders>();
+        var nations = new List<Nation>();
 
 
         // // 'using' statement ensures the file is closed properly when done
@@ -35,40 +36,28 @@ class Q21
         // Console.WriteLine($"Saved to: {Path.GetFullPath("nations.json")}");
 
 
-        if (!File.Exists("suppliers.json")) return new List<string>();
-
         using (FileStream openStream = File.OpenRead("suppliers.json"))
         {
-            // Deserialize directly from the file stream
-            suppliers = JsonSerializer.Deserialize<List<string>>(openStream);
+            suppliers = JsonSerializer.Deserialize<List<Supplier>>(openStream);
         }
-
-
-        if (!File.Exists("lineitems.json")) return new List<string>();
 
         using (FileStream openStream = File.OpenRead("lineitems.json"))
         {
-            // Deserialize directly from the file stream
-            lineitems = JsonSerializer.Deserialize<List<string>>(openStream);
+            lineitems = JsonSerializer.Deserialize<List<LineItem>>(openStream);
         }
-
-
-        if (!File.Exists("orders.json")) return new List<string>();
 
         using (FileStream openStream = File.OpenRead("orders.json"))
         {
-            // Deserialize directly from the file stream
-            orders = JsonSerializer.Deserialize<List<string>>(openStream);
+            orders = JsonSerializer.Deserialize<List<Orders>>(openStream);
         }
-
-
-        if (!File.Exists("nations.json")) return new List<string>();
 
         using (FileStream openStream = File.OpenRead("nations.json"))
         {
-            // Deserialize directly from the file stream
-            nations = JsonSerializer.Deserialize<List<string>>(openStream);
+            nations = JsonSerializer.Deserialize<List<Nation>>(openStream);
         }
+
+
+        Console.WriteLine("Files loaded...");
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -97,26 +86,27 @@ class Q21
                         .Take(100)
                         .ToList();
 
-        // // var filtered_ = (from s in suppliers
-        // //                 join l1 in lineitems on s.s_suppkey equals l1.l_suppkey
-        // //                 join o in orders on l1.l_orderkey equals o.o_orderkey
-        // //                 join n in nations on s.s_nationkey equals n.n_nationkey
-        // //                 where o.o_orderstatus == "F"
-        // //                    && l1.l_receiptdate > l1.l_commitdate
-        // //                    && n.n_name == "SAUDI ARABIA" // Standard TPC-H Q21 default nation
-        // //                    // EXISTS: There is another supplier for the same order
-        // //                    && lineitems.Any(l2 => l2.l_orderkey == l1.l_orderkey && l2.l_suppkey != l1.l_suppkey)
-        // //                    // NOT EXISTS: No other supplier for the same order was late
-        // //                    && !lineitems.Any(l3 => l3.l_orderkey == l1.l_orderkey && l3.l_suppkey != l1.l_suppkey && l3.l_receiptdate > l3.l_commitdate)
-        // //                 group s by s.s_name into g
-        // //                 orderby g.Count() descending, g.Key
-        // //                 select new 
-        // //                 { 
-        // //                     s_name = g.Key, 
-        // //                     numwait = g.Count() 
-        // //                 })
-        // //                 .Take(10)
-        // //                 .ToList();
+        var filtered
+         = (from s in suppliers
+                        join l1 in lineitems on s.s_suppkey equals l1.l_suppkey
+                        join o in orders on l1.l_orderkey equals o.o_orderkey
+                        join n in nations on s.s_nationkey equals n.n_nationkey
+                        where o.o_orderstatus == "F"
+                           && l1.l_receiptdate > l1.l_commitdate
+                           && n.n_name == "SAUDI ARABIA" // Standard TPC-H Q21 default nation
+                           // EXISTS: There is another supplier for the same order
+                           && lineitems.Any(l2 => l2.l_orderkey == l1.l_orderkey && l2.l_suppkey != l1.l_suppkey)
+                           // NOT EXISTS: No other supplier for the same order was late
+                           && !lineitems.Any(l3 => l3.l_orderkey == l1.l_orderkey && l3.l_suppkey != l1.l_suppkey && l3.l_receiptdate > l3.l_commitdate)
+                        group s by s.s_name into g
+                        orderby g.Count() descending, g.Key
+                        select new 
+                        { 
+                            s_name = g.Key, 
+                            numwait = g.Count() 
+                        })
+                        .Take(100)
+                        .ToList();
 
         stopwatch.Stop();
         TimeSpan timeTaken = stopwatch.Elapsed;

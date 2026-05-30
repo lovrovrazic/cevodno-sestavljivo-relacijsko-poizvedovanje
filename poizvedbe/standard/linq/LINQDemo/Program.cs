@@ -32,13 +32,13 @@ class Program
             "Catalog=samples;" +
             "ConnSchema=tchp;";
 
-        Console.WriteLine("Connecting to Databricks from macOS...");
+        // Console.WriteLine("Connecting to Databricks from macOS...");
 
         try
         {
-            using var connection = new OdbcConnection(connectionString);
-            connection.Open();
-            Console.WriteLine("Successfully connected!");
+            // using var connection = new OdbcConnection(connectionString);
+            // connection.Open();
+            // Console.WriteLine("Successfully connected!");
 
             // var q1 = new Q1();
             // Console.WriteLine("Starting Q1...");
@@ -58,7 +58,8 @@ class Program
 
             var q21 = new Q21();
             Console.WriteLine("Starting Q21...");
-            q21.runQuery(connection);
+            // q21.runQuery(connection);
+            q21.runQuery();
 
         }
         catch (Exception ex)
