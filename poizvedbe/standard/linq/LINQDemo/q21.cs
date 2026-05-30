@@ -13,19 +13,26 @@ class Q21
 	public void runQuery(OdbcConnection connection)
 	{
         // var suppliers = connection.Query<Supplier>("SELECT s_suppkey, s_name, s_address, s_phone, s_nationkey FROM samples.tpch.supplier").ToList();
-        var lineitems = connection.Query<LineItem>("SELECT l_orderkey, l_suppkey, l_receiptdate, l_commitdate FROM samples.tpch.lineitem where l_shipdate >= date'1995-05-01'").ToList();
+        // var lineitems = connection.Query<LineItem>("SELECT l_orderkey, l_suppkey, l_receiptdate, l_commitdate FROM samples.tpch.lineitem where l_shipdate >= date'1995-05-01'").ToList();
         // var orders = connection.Query<Orders>("SELECT o_orderkey, o_orderstatus FROM samples.tpch.orders where o_orderdate >= date'1995-05-01'").ToList();
         // var nations = connection.Query<Nation>("SELECT n_nationkey, n_name FROM samples.tpch.nation").ToList();
 
         Console.WriteLine("Received tables from Databricks...");
 
+
+
         // 'using' statement ensures the file is closed properly when done
-        using (FileStream createStream = File.Create("lineitems.json"))
+        using (FileStream createStream = File.Create("nations.json"))
         {
             // Serialize directly into the file stream, bypassing RAM limits
-            JsonSerializer.Serialize(createStream, largeList);
+            JsonSerializer.Serialize(createStream, nations);
         }
-        Console.WriteLine($"Saved to: {Path.GetFullPath(fileName)}");
+        Console.WriteLine($"Saved to: {Path.GetFullPath("nations.json")}");
+
+
+        
+
+
 
         // Stopwatch stopwatch = new Stopwatch();
         // stopwatch.Start();
