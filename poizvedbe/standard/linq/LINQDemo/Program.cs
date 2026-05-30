@@ -52,9 +52,13 @@ class Program
             // Console.WriteLine("Starting Q13...");
             // q13.runQuery(connection);
 
-            var q15 = new Q15();
-            Console.WriteLine("Starting Q15...");
-            q15.runQuery(connection);
+            // var q15 = new Q15();
+            // Console.WriteLine("Starting Q15...");
+            // q15.runQuery(connection);
+
+            var q21 = new Q21();
+            Console.WriteLine("Starting Q21...");
+            q21.runQuery(connection);
 
         }
         catch (Exception ex)
