@@ -24,3 +24,14 @@ select {
 }
 sort {-s.s_acctbal, n.n_name, s.s_name, p.p_partkey}
 take 100
+
+from = join () . == group window derive min {} filter ~= select , sort - take
+
+n1 = 18
+N1 = 75
+
+
+p part ps partsupp p_partkey ps_partkey s supplier ps_suppkey s_suppkey n nation s_nationkey n_nationkey r region n_regionkey r_regionkey min_ps_supplycost p_size 15 p_type ".*BRASS$" r_name "EUROPE" s_acctbal s_name n_name p_mfgr s_address s_phone s_comment 100
+
+n2 = 33
+N2 = 64

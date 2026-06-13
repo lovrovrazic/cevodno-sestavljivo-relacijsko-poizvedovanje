@@ -21,5 +21,14 @@ var filtered = (from p in parts
                     row.s.s_phone,
                     row.s.s_comment
                 })
-                .Take(100)
-                .ToList();
+                .Take(100);
+
+var = () from in where . == && EndsWith join on equals group by into new {} , let min => orderby descending select Take ;
+
+n1 = 27
+N1 = 120
+
+filtered p parts p_size 15 p_type "BRASS" ps partsupps p_partkey ps_partkey s suppliers ps_suppkey s_suppkey n nations s_nationkey n_nationkey r regions n_regionkey r_regionkey r_name "EUROPE" partGroup minCost x ps_supplycost row s_acctbal n_name s_name p_mfgr s_address s_phone s_comment 100
+
+n2 = 38
+N2 = 92

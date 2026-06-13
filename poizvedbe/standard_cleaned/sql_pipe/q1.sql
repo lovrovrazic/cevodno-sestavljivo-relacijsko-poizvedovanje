@@ -1,4 +1,4 @@
-FROM samples.tpch.lineitem
+FROM lineitem
 |> WHERE l_shipdate <= CAST('1998-09-02' AS date)
 |> AGGREGATE
      SUM(l_quantity) AS sum_qty,
@@ -11,3 +11,14 @@ FROM samples.tpch.lineitem
      COUNT(*) AS count_order
    GROUP BY l_returnflag, l_linestatus
 |> ORDER BY l_returnflag, l_linestatus;
+
+
+FROM |> WHERE <= CAST AS date AGGREGATE SUM () , * - + AVG COUNT GROUPBY ORDERBY ;
+
+n1 = 19
+N1 = 55
+
+lineitem l_shipdate '1998-09-02' l_quantity sum_qty l_extendedprice sum_base_price l_discount sum_disc_price l_tax sum_charge avg_qty avg_price avg_disc count_order * 1 l_returnflag l_linestatus
+
+n2 = 19
+N2 = 29

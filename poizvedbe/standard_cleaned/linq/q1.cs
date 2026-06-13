@@ -15,3 +15,15 @@ var filtered = from item in lineitem
                    avg_disc        = g.Average(x => x.l_discount),
                    count_order     = g.Count()
                };
+
+
+var = from in where . <= , () new DateTime group by into {} orderby select Sum x => * - + Average Count ;
+
+n1 = 26
+N1 = 118
+
+
+filtered item lineitem l_shipdate 1998 9 2 l_returnflag l_linestatus g Key sum_qty l_quantity sum_base_price l_extendedprice sum_disc_price l_discount sum_charge l_tax avg_qty avg_price avg_disc count_order
+
+n2 = 23
+N2 = 52
