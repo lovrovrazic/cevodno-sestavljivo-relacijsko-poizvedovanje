@@ -17,13 +17,13 @@ var filtered = from item in lineitem
                };
 
 
-var = from in where . <= , () new DateTime group by into {} orderby select Sum x => * - + Average Count ;
+var = from in where . <= , () new group by into {} orderby select Sum x => * - + Average Count ;
 
-n1 = 26
-N1 = 118
+n1 = 25
+N1 = 117
 
 
-filtered item lineitem l_shipdate 1998 9 2 l_returnflag l_linestatus g Key sum_qty l_quantity sum_base_price l_extendedprice sum_disc_price l_discount sum_charge l_tax avg_qty avg_price avg_disc count_order
+filtered item lineitem l_shipdate 1998 9 2 l_returnflag l_linestatus g Key sum_qty l_quantity sum_base_price l_extendedprice sum_disc_price l_discount sum_charge l_tax avg_qty avg_price avg_disc count_order DateTime
 
-n2 = 23
-N2 = 52
+n2 = 24
+N2 = 53

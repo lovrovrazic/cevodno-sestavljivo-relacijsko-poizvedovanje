@@ -8,5 +8,4 @@ var filtered = (from c in customers
                 {
                     c_count = g.Key,
                     custdist = g.Count()
-                })
-                .ToList();
+                });

@@ -22,12 +22,12 @@ ORDER BY
 
 
 
-, AS sum avg () - + <= CAST count * date ;
+, AS sum avg () - + <= CAST count * ;
 
-n1 = 18
-N1 = 50
+n1 = 17
+N1 = 49
 
-l_returnflag l_linestatus l_quantity l_extendedprice sum_qty sum_base_price sum_disc_price sum_charge avg_qty avg_price avg_disc count_order l_shipdate 1 l_tax * '1998-09-02' l_discount lineitem
+l_returnflag l_linestatus l_quantity l_extendedprice sum_qty sum_base_price sum_disc_price sum_charge avg_qty avg_price avg_disc count_order l_shipdate 1 l_tax * '1998-09-02' l_discount lineitem date
  
-n2 = 19
-N2 = 31
+n2 = 20
+N2 = 32

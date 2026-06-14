@@ -29,12 +29,12 @@ ORDER BY
     s_suppkey;
 
 
-with as () select , sum * - from where >= cast date < groupby = max orderby ;
+with as () select , sum * - from where >= cast < groupby = max orderby ;
 
-n1 = 19
-N1 = 42
+n1 = 18
+N1 = 40
 
-revenue l_suppkey supplier_no l_extendedprice 1 l_discount total_revenue lineitem l_shipdate '1996-01-01' '1996-04-01' s_suppkey s_name s_address s_phone supplier
+revenue l_suppkey supplier_no l_extendedprice 1 l_discount total_revenue lineitem l_shipdate '1996-01-01' '1996-04-01' s_suppkey s_name s_address s_phone supplier date
 
-n2 = 16
-N2 = 26
+n2 = 17
+N2 = 28

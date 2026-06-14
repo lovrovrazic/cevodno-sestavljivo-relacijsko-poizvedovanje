@@ -19,4 +19,14 @@ var filtered = (from l in lineitems
                     s.s_address,
                     s.s_phone,
                     r.TotalRevenue
-                }).ToList();
+                });
+
+var = () from in where . >= new , && < group by into select {} Sum => * - let Any ? Max : == join on equals orderby ; 
+
+n1 = 32
+N1 = 82
+
+filtered l lineitems l_shipdate DateTime 1996 1 4 l_suppkey g SupplierNo Key TotalRevenue item l_extendedprice l_discount revenueStream globalGroup r maxRevenue x 0 s suppliers s_suppkey s_name s_address s_phone 
+
+n2 = 28
+N2 = 65

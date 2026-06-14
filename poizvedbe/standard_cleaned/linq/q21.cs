@@ -11,5 +11,4 @@ var filtered = (from s in suppliers
                     s_name = g.Key, 
                     numwait = g.Count() 
                 })
-                .Take(100)
-                .ToList();
+                .Take(100);

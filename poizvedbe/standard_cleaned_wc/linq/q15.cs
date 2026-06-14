@@ -19,4 +19,4 @@ var filtered = (from l in lineitems
                     s.s_address,
                     s.s_phone,
                     r.TotalRevenue
-                }).ToList();
+                });

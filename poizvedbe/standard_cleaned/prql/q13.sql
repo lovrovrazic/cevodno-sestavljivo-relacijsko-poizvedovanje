@@ -11,3 +11,14 @@ group c_count (
   }
 )
 sort {-custdist, -c_count}
+
+
+from = join : () == && ! ~= group aggregate . {} != | sum sort , - count
+
+n1 = 20
+N1 = 36
+
+c customer side left o orders c_custkey o_custkey o_comment "special.*requests" c_count o_orderkey null custdist
+
+n2 = 14
+N2 = 23

@@ -16,14 +16,3 @@ GROUP BY
 ORDER BY
     custdist DESC,
     c_count DESC;
-
-
-select , count () * as from leftouterjoin on = and not like groupby orderby desc ;
-
-n1 = 17
-N1 = 28
-
-c_count custdist c_custkey o_orderkey customer orders o_custkey o_comment '%special%requests%' c_orders 
-
-n2 = 10
-N2 = 17

@@ -17,3 +17,13 @@ select {
   total_revenue
 }
 sort s_suppkey
+
+from filter >= && < group () aggregate {} = sum * - select derive == join sort max
+
+n1 = 19
+N1 = 30
+
+lineitem l_shipdate @1996-01-01 @1996-04-01 l_suppkey total_revenue l_extendedprice 1 l_discount supplier_no max_revenue supplier s_suppkey s_name s_address s_phone
+
+n2 = 16
+N2 = 26

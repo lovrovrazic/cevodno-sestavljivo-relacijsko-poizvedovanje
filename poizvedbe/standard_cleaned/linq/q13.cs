@@ -8,5 +8,14 @@ var filtered = (from c in customers
                 {
                     c_count = g.Key,
                     custdist = g.Count()
-                })
-                .ToList();
+                });
+
+var = new () , . ; from in on equals into let Count => == || ! IsMatch group by orderby descending select {} join
+
+n1 = 26
+N1 = 55
+
+excludeRegex "special.*requests" RegexOptions Regex Compiled filtered c customers o orders c_custkey o_custkey custOrders orderCount o_comment null g Key c_count custdist 
+
+n2 = 20
+N2 = 34
