@@ -35,3 +35,14 @@ group (s.s_name) (
 )
 sort {-numwait, s.s_name}
 take 100
+
+
+let = () from group aggregate {} filter > select == join count sort - take .
+
+n1 = 17
+N1 = 88
+
+orders_with_multiple_supps lineitem l_orderkey total_supps l_suppkey 1 ms_l_orderkey orders_with_only_one_late_supp l_receiptdate l_commitdate late_supps ol_l_orderkey l1 s supplier s_suppkey o orders o_orderkey n nation s_nationkey n_nationkey n_name "SAUDI ARABIA" o_orderstatus "F" ms ol s_name numwait 100 
+
+n2 = 32
+N2 = 69

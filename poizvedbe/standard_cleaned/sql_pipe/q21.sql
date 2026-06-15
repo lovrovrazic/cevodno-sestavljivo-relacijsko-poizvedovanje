@@ -16,3 +16,14 @@ FROM supplier
    GROUP BY s_name
 |> ORDER BY numwait DESC, s_name
 |> LIMIT 100;
+
+
+from |> join on = . where and > semijoin antijoin != aggregate count () * as groupby orderby desc , limit ;
+
+n1 = 23
+N1 = 62
+
+supplier lineitem l1 s_suppkey l_suppkey orders o_orderkey l_orderkey nation s_nationkey n_nationkey o_orderstatus 'F' l_receiptdate l_commitdate n_name 'SAUDI ARABIA' l2 l3 numwait s_name 100
+
+n2 = 22
+N2 = 50

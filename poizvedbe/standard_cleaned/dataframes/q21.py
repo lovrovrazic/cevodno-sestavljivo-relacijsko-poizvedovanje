@@ -13,3 +13,14 @@ q21_piped = (
     .sort_values(["numwait", "s_name"], ascending=[False, True])
     .head(100)
 )
+
+
+= . query groupby nunique () merge [] , assign lambda : map size rename sort_values head
+
+n1 = 17
+N1 = 99
+
+_late lineitem_q21 "l_receiptdate > l_commitdate" _n_suppliers "l_orderkey" "l_suppkey" _n_late_suppliers q21_piped supplier nation "n_name == 'SAUDI ARABIA'" "n_nationkey" left_on "s_nationkey" right_on "s_suppkey" orders "o_orderstatus == 'F'" "o_orderkey" n_suppliers d n_late "n_suppliers > 1 and n_late == 1" "s_name" as_index False columns "size" "numwait" ascending True 100 size
+
+n2 = 33
+N2 = 56
