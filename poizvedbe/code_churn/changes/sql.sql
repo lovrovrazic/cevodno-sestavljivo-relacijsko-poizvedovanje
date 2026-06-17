@@ -1,17 +1,17 @@
 SELECT
-  customer_segment,
+  customer_segment_renamed,
   COUNT(customer_key) AS customer_count
 FROM
   (
     SELECT
       c_custkey AS customer_key,
-      c_mktsegment AS customer_segment
+      c_mktsegment AS customer_segment_renamed
     FROM
       customer
   )
 WHERE
   customer_key > 100
 GROUP BY
-  customer_segment
+  customer_segment_renamed
 ORDER BY
   customer_count DESC;
