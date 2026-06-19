@@ -7,55 +7,55 @@ FROM uc_production.analytics.silver
 |> WHERE year = 2026 and month = 6 and day = 15 and tenant = 'team'
 |> AS e
 |> INNER JOIN (
-    FROM (
-      SELECT
-        id,
-        title,
-        created,
-        company,
-        tenant_name,
-        doc_topics,
-        explode_outer(chapter_from_json) as chapter
-      FROM (
-        FROM uc_production.hevo.mongo_flipbooks
-        |> WHERE deleted IS FALSE
-        |> SELECT
-          _id AS id,
-          title,
-          created,
-          company,
-          __turtl__tenant_name AS tenant_name,
-          from_json(topics, 'array<string>') AS doc_topics,
-          CASE
-            WHEN publishedpages = '[]' OR isnull(publishedpages)
-              THEN from_json(pages, 'array<struct<_id:string, topics:array<string>>>')
-            ELSE from_json(publishedpages, 'array<struct<_id:string, topics:array<string>>>')
-          END AS chapter_from_json
-      )
-    )
-    |> SELECT
+     FROM (
+       SELECT
          id,
          title,
          created,
          company,
          tenant_name,
          doc_topics,
-         chapter._id AS chapter_id,
-         chapter.topics AS chapter_topics
-  ) d
-  ON d.id = e.`story.id`
- AND (d.chapter_id = e.`page.id` OR d.chapter_id IS NULL)
+         explode_outer(chapter_from_json) as chapter
+       FROM (
+         FROM uc_production.hevo.mongo_flipbooks
+         |> WHERE deleted IS FALSE
+         |> SELECT
+           _id AS id,
+           title,
+           created,
+           company,
+           __turtl__tenant_name AS tenant_name,
+           from_json(topics, 'array<string>') AS doc_topics,
+           CASE
+             WHEN publishedpages = '[]' OR isnull(publishedpages)
+               THEN from_json(pages, 'array<struct<_id:string, topics:array<string>>>')
+             ELSE from_json(publishedpages, 'array<struct<_id:string, topics:array<string>>>')
+           END AS chapter_from_json
+       )
+     )
+     |> SELECT
+          id,
+          title,
+          created,
+          company,
+          tenant_name,
+          doc_topics,
+          chapter._id AS chapter_id,
+          chapter.topics AS chapter_topics
+   ) d
+   ON d.id = e.`story.id`
+   AND (d.chapter_id = e.`page.id` OR d.chapter_id IS NULL)
 |> LEFT JOIN uc_production.hevo.mongo_personalisations p
-   ON p.flipbook = e.`story.id`
- AND p._id = e.`story.personalisation.id`
+     ON p.flipbook = e.`story.id`
+     AND p._id = e.`story.personalisation.id`
 |> WHERE e.`page.id` != 'COOKIE'
-    AND e.`agent.ip` NOT IN (
-      FROM uc_production.dbt.int_banned_ips
-      |> WHERE company_id = e.`story.company.id`
-         OR scope = 'Global'
-      |> SELECT ip
-    )
-    AND (p.deleted IS NULL OR p.deleted IS FALSE)
+     AND e.`agent.ip` NOT IN (
+       FROM uc_production.dbt.int_banned_ips
+       |> WHERE company_id = e.`story.company.id`
+            OR scope = 'Global'
+       |> SELECT ip
+     )
+     AND (p.deleted IS NULL OR p.deleted IS FALSE)
 |> EXTEND date_format(e.`tracker.timestamp`, 'yyyy-MM-dd') AS read_date
 |> AGGREGATE
      first(d.company) AS team_id,
@@ -194,7 +194,7 @@ FROM uc_production.analytics.silver
       0 AS min_log_dts,
       0.01782918846332898 AS min_dcp,
       0.6931471805599453 AS min_log_dee
-  ) mmet
+   ) mmet
 |> LEFT JOIN uc_production.aai.int_reader_accounts ira
      ON ira.reader_id = met.reader_id
      AND ira.doc_id = met.`story.id`
