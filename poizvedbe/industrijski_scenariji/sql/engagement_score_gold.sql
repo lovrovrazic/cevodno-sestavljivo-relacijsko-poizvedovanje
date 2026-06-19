@@ -1,8 +1,8 @@
-create or replace table uc_production.analytics.engagement_score_gold 
-using delta
-partitioned by (year_day)
-as (
-
+-- create or replace table uc_production.analytics.engagement_score_gold 
+-- using delta
+-- partitioned by (year_day)
+-- as (
+SET use_cached_result = false;
 with banned_ips as (
     select
       ips.ip,
@@ -151,6 +151,7 @@ with banned_ips as (
           or scope = 'Global'
       )
       and (p.deleted is null or p.deleted is false)
+      and year = 2026 and month = 6 and day = 15 and tenant = 'team'
     group by
       1, 2, 3, 4, 5, 6
     having
@@ -345,4 +346,5 @@ select
   *
 from
   eng_score
-)
+ORDER BY engagement_score DESC;
+-- )
