@@ -9,12 +9,7 @@ FROM uc_production.analytics.silver
 |> INNER JOIN (
      FROM (
        SELECT
-         id,
-         title,
-         created,
-         company,
-         tenant_name,
-         doc_topics,
+         * EXCEPT (chapter_from_json),
          explode_outer(chapter_from_json) as chapter
        FROM (
          FROM uc_production.hevo.mongo_flipbooks
@@ -34,12 +29,7 @@ FROM uc_production.analytics.silver
        )
      )
      |> SELECT
-          id,
-          title,
-          created,
-          company,
-          tenant_name,
-          doc_topics,
+          * EXCEPT (chapter),
           chapter._id AS chapter_id,
           chapter.topics AS chapter_topics
    ) d
@@ -134,16 +124,10 @@ FROM uc_production.analytics.silver
    AND ana.`page.id` = chapter_pages.chapter_id
    AND ana.`story.tenant` = chapter_pages.tenant
 |> AGGREGATE
-     array_distinct(
-       flatten(
-         flatten(
-           array(
-             array_agg(distinct_surf_pages_read),
-             array_agg(distinct_immerse_pages_read_v2)
-           )
-         )
-       )
-     ) AS read_pages_array,
+     array_distinct(flatten(flatten(array(
+       array_agg(distinct_surf_pages_read),
+       array_agg(distinct_immerse_pages_read_v2)
+     )))) AS read_pages_array,
      coalesce(sum(coalesce(surf_time_ms, 0) + coalesce(immerse_time_ms, 0)) / 1000, 0) AS time_spent,
      sum(number_of_events) AS total_number_of_events
    GROUP BY
@@ -208,7 +192,7 @@ FROM uc_production.analytics.silver
      (norm_dts + norm_dcp + norm_dee) * 100 AS engagement_score
 |> SELECT
      read_date AS year_day,
-     ira.reader_id,
+     met.reader_id,
      `story.id` AS story_id,
      `story.personalisation.id` AS story_personalisation_id,
      `page.id` AS chapter_id,
