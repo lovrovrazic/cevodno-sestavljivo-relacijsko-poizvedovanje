@@ -3,13 +3,7 @@
 -- partitioned by (year_day)
 -- as (
 SET use_cached_result = false;
-with banned_ips as (
-    select
-      ips.ip,
-      ips.company_id
-    from
-      uc_production.dbt.int_banned_ips ips
-),
+with
   docs as (
     select
       *
@@ -38,8 +32,6 @@ with banned_ips as (
         where
           deleted is false
       )
-    where
-      1 = 1
   ),
   gold_metrics_chapters as (
     select
