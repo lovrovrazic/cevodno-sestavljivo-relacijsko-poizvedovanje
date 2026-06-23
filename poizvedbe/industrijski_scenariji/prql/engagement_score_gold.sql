@@ -108,7 +108,7 @@ group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_
     distinct_immerse_pages_read_v2 = s"array_agg(DISTINCT {immerse_page_read})",
     is_read = (sum (s"case when {e_type} = 'surf' then 1 end")) > 0,
     surf_time_ms = sum(s"case when {e_type} = 'surf' then coalesce({e.duration}, 0) end"),
-    immerse_time_ms = sum(s"case when e_type in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce(e.duration, 0) end")
+    immerse_time_ms = sum(s"case when {e_type} in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce({e.duration}, 0) end")
   }
 )
 filter s"is_read"

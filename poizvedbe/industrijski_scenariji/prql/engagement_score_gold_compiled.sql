@@ -242,11 +242,11 @@ ana AS (
     COALESCE(
       SUM(
         case
-          when e_type in (
+          when _expr_6 in (
             'immersion',
             'immersion_viewed',
             'immerse_page_turn'
-          ) then coalesce(e.duration, 0)
+          ) then coalesce(duration, 0)
         end
       ),
       0
