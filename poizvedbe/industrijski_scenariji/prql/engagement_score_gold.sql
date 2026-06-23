@@ -65,8 +65,7 @@ derive {
   duration,
   tracker_timestamp = s"`tracker.timestamp`",
   page_immerse_page_group_id = s"`page.immerse_page_group_id`",
-  page_immerse_page_index = s"`page.immerse_page_index`",
-
+  page_immerse_page_index = s"`page.immerse_page_index`"
 }
 join side:inner d (d.id == story_id && (d.chapter_id == page_id || d.chapter_id == null))
 join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == story_id && p._id == story_personalisation_id)
