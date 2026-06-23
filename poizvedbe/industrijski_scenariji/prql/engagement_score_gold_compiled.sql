@@ -326,13 +326,7 @@ table_3 AS (
     COALESCE(
       COALESCE(
         SUM(
-          COALESCE(
-            COALESCE(
-              COALESCE(ana.surf_time_ms, 0 + ana.immerse_time_ms),
-              0
-            ),
-            0
-          )
+          coalesce(ana.surf_time_ms, 0) + coalesce(ana.immerse_time_ms, 0)
         ),
         0
       ) / 1000,

@@ -161,7 +161,7 @@ group {
 } (
   aggregate {
     read_pages_array = s"array_distinct(flatten(flatten(array(array_agg({distinct_surf_pages_read}),array_agg({distinct_immerse_pages_read_v2})))))",
-    time_spent = ((sum (surf_time_ms ?? 0 + immerse_time_ms ?? 0) ?? 0) / 1000) ?? 0,
+    time_spent = ((sum (s"coalesce({surf_time_ms}, 0) + coalesce({immerse_time_ms}, 0)")) / 1000 ) ?? 0,
     total_number_of_events = sum number_of_events
   }
 )
