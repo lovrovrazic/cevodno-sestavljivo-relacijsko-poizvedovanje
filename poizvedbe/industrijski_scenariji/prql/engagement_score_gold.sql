@@ -48,7 +48,8 @@ derive {
   duration,
   tracker_timestamp = s"`tracker.timestamp`",
   page_immerse_page_group_id = s"`page.immerse_page_group_id`",
-  page_immerse_page_index = s"`page.immerse_page_index`"
+  page_immerse_page_index = s"`page.immerse_page_index`",
+  reader_id = s"`reader.id`",
 }
 join side:inner d (d.id == story_id && (d.chapter_id == page_id || d.chapter_id == null))
 join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == story_id && p._id == story_personalisation_id)
@@ -67,7 +68,7 @@ derive {
 group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_date} (
   aggregate {
     team_id = first d.company,
-    reader_id = first s"`reader.id`",
+    reader_id = first reader_id,
     story_author_id = first s"`story.author.id`",
     agent_location_country = first s"`agent.location.country`",
     agent_source = first s"`agent.source`",

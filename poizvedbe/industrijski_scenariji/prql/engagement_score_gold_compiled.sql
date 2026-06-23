@@ -7,10 +7,11 @@ WITH table_7 AS (
     `page.id` AS page_id,
     `type` AS _expr_6,
     duration,
-    `page.immerse_page_group_id` AS _expr_11,
-    `page.immerse_page_index` AS _expr_12,
-    `tracker.timestamp` AS _expr_13,
-    `story.company.id` AS _expr_14
+    `reader.id` AS _expr_11,
+    `page.immerse_page_group_id` AS _expr_12,
+    `page.immerse_page_index` AS _expr_13,
+    `tracker.timestamp` AS _expr_14,
+    `story.company.id` AS _expr_15
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -80,11 +81,12 @@ table_6 AS (
     table_7.duration,
     d.chapter_topics,
     d.doc_topics,
-    d.company,
     table_7._expr_11,
+    d.company,
     table_7._expr_12,
     table_7._expr_13,
-    table_7._expr_14
+    table_7._expr_14,
+    table_7._expr_15
   FROM
     table_7
     INNER JOIN d ON d.id = table_7.story_id
@@ -108,9 +110,9 @@ table_5 AS (
     table_6.story_id,
     table_6.story_personalisation_id,
     table_6.page_id,
-    date_format(table_6._expr_13, 'yyyy-MM-dd') AS read_date,
+    date_format(table_6._expr_14, 'yyyy-MM-dd') AS read_date,
     FIRST_VALUE(table_6.company) AS team_id,
-    FIRST_VALUE(`reader.id`) AS reader_id,
+    FIRST_VALUE(table_6._expr_11) AS reader_id,
     FIRST_VALUE(`story.author.id`) AS story_author_id,
     FIRST_VALUE(`agent.location.country`) AS agent_location_country,
     FIRST_VALUE(`agent.source`) AS agent_source,
@@ -136,9 +138,9 @@ table_5 AS (
       OR table_6._expr_6 = 'immerse_page_turn' THEN concat(
         table_6.page_id,
         '_',
-        coalesce(table_6._expr_11, 'unknown'),
+        coalesce(table_6._expr_12, 'unknown'),
         '_',
-        coalesce(table_6._expr_12, 'unknown')
+        coalesce(table_6._expr_13, 'unknown')
       )
       ELSE NULL
     END AS _expr_7,
@@ -161,7 +163,7 @@ table_5 AS (
     ) AS _expr_10
   FROM
     table_6
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_14
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_15
     OR bi.scope = 'Global'
   WHERE
     bi.ip IS NULL
