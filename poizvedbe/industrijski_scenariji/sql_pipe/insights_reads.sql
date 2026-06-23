@@ -45,7 +45,8 @@ reads_total AS (
        AND b.ip IS NULL
        AND e.min_timestamp < w.windowEnd
        AND e.is_read IS TRUE
-  |> AGGREGATE count(distinct e.read_id) AS reads GROUP BY w.story_id, w.windowEnd
+  |> AGGREGATE count(distinct e.read_id) AS reads
+     GROUP BY w.story_id, w.windowEnd
 )
 
 FROM reads_window rw
@@ -70,19 +71,3 @@ FROM reads_window rw
      current_timestamp() AS timestamp
 |> ORDER BY reads DESC
 |> LIMIT 50
-
-
-
-
-
--- CTEs converted to pipe chains:
-
--- deleted_persos and docs: SELECT … FROM … WHERE → FROM … |> WHERE … |> SELECT
--- reads_window: the GROUP BY + HAVING pattern becomes |> AGGREGATE … GROUP BY, followed by |> EXTEND window.start AS windowStart, window.end AS windowEnd to unpack the Spark window struct, |> WHERE reads > 0 in place of HAVING, and |> DROP window to clean up the struct column
--- reads_total: the windows CTE is eliminated — its role is inlined as |> SELECT story_id, windowEnd |> AS w at the top of the reads_total pipe chain
-
--- Main pipeline:
-
--- FROM reads_window rw |> LEFT JOIN … |> LEFT JOIN … replaces the FROM … join block
--- |> AGGREGATE … GROUP BY handles grouping; the grouped columns flow through automatically
--- |> SELECT computes the sha2 id, renames columns, and appends current_timestamp() in one step — eliminating the need for a separate EXTEND
