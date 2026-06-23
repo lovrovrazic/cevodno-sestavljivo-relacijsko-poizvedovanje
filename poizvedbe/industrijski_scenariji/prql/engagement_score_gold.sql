@@ -88,10 +88,10 @@ group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_
     chapter_topics = first d.chapter_topics,
     number_of_events = count {},
     surf_time_ms = ((sum (case [e_type == "surf" => e.duration ?? 0])) ?? 0),
-    immerse_time_ms = ((sum (case [(e.e_type | in ['immersion', 'immersion_viewed', 'immerse_page_turn']) => e.duration ?? 0])) ?? 0),
+    immerse_time_ms = ((sum (case [(e_type | in ['immersion', 'immersion_viewed', 'immerse_page_turn']) => e.duration ?? 0])) ?? 0),
     distinct_surf_pages_read = s"array_agg(DISTINCT {surf_page_read})",
     distinct_immerse_pages_read_v2 = s"array_agg(DISTINCT {immerse_page_read})",
-    is_read = sum (case [e.e_type == 'surf' => 1]) > 1 ?? false
+    is_read = sum (case [e_type == 'surf' => 1]) > 1 ?? false
   }
 )
 filter is_read == true

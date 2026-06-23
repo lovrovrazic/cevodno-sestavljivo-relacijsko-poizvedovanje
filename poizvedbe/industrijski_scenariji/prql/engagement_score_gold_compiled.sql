@@ -5,9 +5,8 @@ WITH table_7 AS (
     `story.id` AS story_id,
     `story.personalisation.id` AS story_personalisation_id,
     `page.id` AS page_id,
-    e_type,
+    `type` AS _expr_6,
     duration,
-    `type` AS _expr_10,
     `page.immerse_page_group_id` AS _expr_11,
     `page.immerse_page_index` AS _expr_12,
     `tracker.timestamp` AS _expr_13,
@@ -77,9 +76,8 @@ table_6 AS (
     table_7.story_id,
     table_7.story_personalisation_id,
     table_7.page_id,
-    table_7.e_type,
+    table_7._expr_6,
     table_7.duration,
-    table_7._expr_10,
     d.chapter_topics,
     d.doc_topics,
     d.company,
@@ -132,10 +130,10 @@ table_5 AS (
     FIRST_VALUE(table_6.doc_topics) AS doc_topics,
     FIRST_VALUE(table_6.chapter_topics) AS chapter_topics,
     COUNT(*) AS number_of_events,
-    table_6.e_type,
+    table_6._expr_6,
     CASE
-      WHEN table_6._expr_10 = 'immersion_start'
-      OR table_6._expr_10 = 'immerse_page_turn' THEN concat(
+      WHEN table_6._expr_6 = 'immersion_start'
+      OR table_6._expr_6 = 'immerse_page_turn' THEN concat(
         table_6.page_id,
         '_',
         coalesce(table_6._expr_11, 'unknown'),
@@ -143,25 +141,24 @@ table_5 AS (
         coalesce(table_6._expr_12, 'unknown')
       )
       ELSE NULL
-    END AS _expr_6,
+    END AS _expr_7,
     CASE
-      WHEN table_6._expr_10 = 'immersion'
-      OR table_6._expr_10 = 'surf'
-      OR table_6._expr_10 = 'surf_start'
+      WHEN table_6._expr_6 = 'immersion'
+      OR table_6._expr_6 = 'surf'
+      OR table_6._expr_6 = 'surf_start'
       AND table_6.page_id = 'END' THEN table_6.page_id
       ELSE NULL
-    END AS _expr_7,
+    END AS _expr_8,
     table_6.duration,
     COALESCE(
       SUM(
         CASE
-          WHEN table_6._expr_10 = 'surf' THEN COALESCE(table_6.duration, 0)
+          WHEN table_6._expr_6 = 'surf' THEN COALESCE(table_6.duration, 0)
           ELSE NULL
         END
       ),
       0
-    ) AS _expr_9,
-    table_6._expr_10
+    ) AS _expr_10
   FROM
     table_6
     LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_14
@@ -198,14 +195,14 @@ table_4 AS (
     doc_topics,
     chapter_topics,
     number_of_events,
-    COALESCE(_expr_9, 0) AS surf_time_ms,
-    e_type,
+    COALESCE(_expr_10, 0) AS surf_time_ms,
     _expr_6,
     _expr_7,
+    _expr_8,
     COALESCE(
       SUM(
         CASE
-          WHEN e_type IN (
+          WHEN _expr_6 IN (
             'immersion',
             'immersion_viewed',
             'immerse_page_turn'
@@ -214,7 +211,7 @@ table_4 AS (
         END
       ),
       0
-    ) AS _expr_8,
+    ) AS _expr_9,
     duration
   FROM
     table_5
@@ -249,14 +246,14 @@ ana AS (
     chapter_topics,
     number_of_events,
     surf_time_ms,
-    COALESCE(_expr_8, 0) AS immerse_time_ms,
-    array_agg(DISTINCT _expr_7) AS distinct_surf_pages_read,
-    array_agg(DISTINCT _expr_6) AS distinct_immerse_pages_read_v2,
+    COALESCE(_expr_9, 0) AS immerse_time_ms,
+    array_agg(DISTINCT _expr_8) AS distinct_surf_pages_read,
+    array_agg(DISTINCT _expr_7) AS distinct_immerse_pages_read_v2,
     COALESCE(
       SUM(
         COALESCE(
           CASE
-            WHEN e_type = 'surf' THEN 1
+            WHEN _expr_6 = 'surf' THEN 1
             ELSE NULL
           END > 1,
           false
@@ -278,7 +275,7 @@ ana AS (
       SUM(
         COALESCE(
           CASE
-            WHEN e_type = 'surf' THEN 1
+            WHEN _expr_6 = 'surf' THEN 1
             ELSE NULL
           END > 1,
           false
