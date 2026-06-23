@@ -27,7 +27,8 @@ WITH table_6 AS (
     `page.immerse_page_group_id` AS _expr_26,
     `page.immerse_page_index` AS _expr_27,
     `tracker.timestamp` AS _expr_28,
-    `story.company.id` AS _expr_29
+    `agent.ip` AS _expr_29,
+    `story.company.id` AS _expr_30
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -118,7 +119,8 @@ table_5 AS (
     table_6._expr_26,
     table_6._expr_27,
     table_6._expr_28,
-    table_6._expr_29
+    table_6._expr_29,
+    table_6._expr_30
   FROM
     table_6
     INNER JOIN d ON d.id = table_6.story_id
@@ -187,8 +189,11 @@ table_4 AS (
     table_5._expr_27
   FROM
     table_5
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_5._expr_29
-    OR bi.scope = 'Global'
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.ip = table_5._expr_29
+    AND (
+      bi.company_id = table_5._expr_30
+      OR bi.scope = 'Global'
+    )
   WHERE
     bi.ip IS NULL
 ),

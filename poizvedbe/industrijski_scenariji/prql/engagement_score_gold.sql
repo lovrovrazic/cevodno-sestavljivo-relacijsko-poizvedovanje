@@ -53,6 +53,7 @@ derive {
   agent_os_version = s"`agent.os.version`",
   agent_browser_name = s"`agent.browser.name`",
   agent_browser_version = s"`agent.browser.version`",
+  agent_ip = s"`agent.ip`",
   read_utm_source = s"`read.utm.source`",
   read_utm_medium = s"`read.utm.medium`",
   read_utm_campaign = s"`read.utm.campaign`",
@@ -70,8 +71,8 @@ derive {
 join side:inner d (d.id == story_id && (d.chapter_id == page_id || d.chapter_id == null))
 join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == story_id && p._id == story_personalisation_id)
 filter (page_id != 'COOKIE' && (p.deleted == null || p.deleted == false))
-join side:left bi = uc_production.dbt.int_banned_ips (bi.company_id == story_company_id || bi.scope == 'Global')
-filter (bi.ip == null)
+join side:left bi = uc_production.dbt.int_banned_ips (bi.ip == agent_ip && (bi.company_id == story_company_id || bi.scope == 'Global'))
+filter (bi.ip == null )
 derive {
   read_date = s"date_format({tracker_timestamp}, 'yyyy-MM-dd')",
   surf_page_read = case [
