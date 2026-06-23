@@ -7,8 +7,11 @@ WITH table_7 AS (
     `page.id` AS page_id,
     e_type,
     duration,
-    type AS _expr_10,
-    `story.company.id` AS _expr_11
+    `type` AS _expr_10,
+    `page.immerse_page_group_id` AS _expr_11,
+    `page.immerse_page_index` AS _expr_12,
+    `tracker.timestamp` AS _expr_13,
+    `story.company.id` AS _expr_14
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -80,7 +83,10 @@ table_6 AS (
     d.chapter_topics,
     d.doc_topics,
     d.company,
-    table_7._expr_11
+    table_7._expr_11,
+    table_7._expr_12,
+    table_7._expr_13,
+    table_7._expr_14
   FROM
     table_7
     INNER JOIN d ON d.id = table_7.story_id
@@ -104,7 +110,7 @@ table_5 AS (
     table_6.story_id,
     table_6.story_personalisation_id,
     table_6.page_id,
-    date_format(`tracker.timestamp`, 'yyyy-MM-dd') AS read_date,
+    date_format(table_6._expr_13, 'yyyy-MM-dd') AS read_date,
     FIRST_VALUE(table_6.company) AS team_id,
     FIRST_VALUE(`reader.id`) AS reader_id,
     FIRST_VALUE(`story.author.id`) AS story_author_id,
@@ -130,11 +136,11 @@ table_5 AS (
     CASE
       WHEN table_6._expr_10 = 'immersion_start'
       OR table_6._expr_10 = 'immerse_page_turn' THEN concat(
-        `page.id`,
+        table_6.page_id,
         '_',
-        coalesce(`page.immerse_page_group_id`, 'unknown'),
+        coalesce(table_6._expr_11, 'unknown'),
         '_',
-        coalesce(`page.immerse_page_index`, 'unknown')
+        coalesce(table_6._expr_12, 'unknown')
       )
       ELSE NULL
     END AS _expr_6,
@@ -158,7 +164,7 @@ table_5 AS (
     table_6._expr_10
   FROM
     table_6
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_11
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_14
     OR bi.scope = 'Global'
   WHERE
     bi.ip IS NULL
@@ -330,8 +336,8 @@ table_3 AS (
       flatten(
         flatten(
           array(
-            array_agg(distinct_surf_pages_read),
-            array_agg(distinct_immerse_pages_read_v2)
+            array_agg(ana.distinct_surf_pages_read),
+            array_agg(ana.distinct_immerse_pages_read_v2)
           )
         )
       )
@@ -418,7 +424,7 @@ met AS (
     total_number_of_events,
     array_size(read_pages_array) AS number_of_read_pages,
     time_spent / array_size(read_pages_array) AS dts,
-    log(dts + 1) AS log_dts,
+    log(time_spent / array_size(read_pages_array) + 1) AS log_dts,
     array_size(read_pages_array) / chapter_pages AS dcp_without_normalisation,
     CASE
       WHEN array_size(read_pages_array) / chapter_pages > 1 THEN 1
@@ -429,7 +435,9 @@ met AS (
       ELSE array_size(read_pages_array) / chapter_pages
     END * log10(chapter_pages + 1) AS dcp,
     total_number_of_events / array_size(read_pages_array) AS dee,
-    log(dee + 1) AS log_dee
+    log(
+      total_number_of_events / array_size(read_pages_array) + 1
+    ) AS log_dee
   FROM
     table_3
 ),

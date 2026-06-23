@@ -18,7 +18,7 @@ from (
 into cfj
 from cfj
 derive {
-  chapter = s"explode_outer(chapter_from_json)"
+  chapter = s"explode_outer({chapter_from_json})"
 }
 select !{
   publishedpages,
@@ -43,9 +43,12 @@ derive {
   story_company_id = s"`story.company.id`",
   story_tenant = s"`story.tenant`",
   page_id = s"`page.id`",
-  e_type = s"type",
+  e_type = s"`type`",
   read_id = s"`read.id`",
-  duration
+  duration,
+  tracker_timestamp = s"`tracker.timestamp`",
+  page_immerse_page_group_id = s"`page.immerse_page_group_id`",
+  page_immerse_page_index = s"`page.immerse_page_index`"
 }
 join side:inner d (d.id == story_id && (d.chapter_id == page_id || d.chapter_id == null))
 join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == story_id && p._id == story_personalisation_id)
@@ -53,12 +56,12 @@ filter (page_id != 'COOKIE' && (p.deleted == null || p.deleted == false))
 join side:left bi = uc_production.dbt.int_banned_ips (bi.company_id == story_company_id || bi.scope == 'Global')
 filter (bi.ip == null)
 derive {
-  read_date = s"date_format(`tracker.timestamp`, 'yyyy-MM-dd')",
+  read_date = s"date_format({tracker_timestamp}, 'yyyy-MM-dd')",
   surf_page_read = case [
     e_type == 'immersion' || e_type == 'surf' || (e_type == 'surf_start' && page_id == 'END') => page_id
   ],
   immerse_page_read = case [
-    e_type == 'immersion_start' || e_type == 'immerse_page_turn' => s"concat(`page.id`, '_', coalesce(`page.immerse_page_group_id`, 'unknown'), '_', coalesce(`page.immerse_page_index`, 'unknown'))"
+    e_type == 'immersion_start' || e_type == 'immerse_page_turn' => s"concat({page_id}, '_', coalesce({page_immerse_page_group_id}, 'unknown'), '_', coalesce({page_immerse_page_index}, 'unknown'))"
   ]
 }
 group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_date} (
@@ -139,25 +142,25 @@ group {
   chapter_pages.chapter_pages
 } (
   aggregate {
-    read_pages_array = s"array_distinct(flatten(flatten(array(array_agg(distinct_surf_pages_read),array_agg(distinct_immerse_pages_read_v2)))))",
+    read_pages_array = s"array_distinct(flatten(flatten(array(array_agg({distinct_surf_pages_read}),array_agg({distinct_immerse_pages_read_v2})))))",
     time_spent = ((sum (surf_time_ms ?? 0 + immerse_time_ms ?? 0) ?? 0) / 1000) ?? 0,
     total_number_of_events = sum number_of_events
   }
 )
 derive {
-  number_of_read_pages = s"array_size(read_pages_array)"
+  number_of_read_pages = s"array_size({read_pages_array})"
 }
 derive {
   dts = time_spent / number_of_read_pages,
-  log_dts = s"log(dts + 1)",
+  log_dts = s"log({dts} + 1)",
   dcp_without_normalisation = number_of_read_pages / chapter_pages.chapter_pages,
   dcp_non_adjusted = case [
     dcp_without_normalisation > 1 => 1,
     true => dcp_without_normalisation
   ],
-  dcp = dcp_non_adjusted * s"log10(chapter_pages+1)",
+  dcp = dcp_non_adjusted * s"log10({chapter_pages.chapter_pages}+1)",
   dee = total_number_of_events / number_of_read_pages,
-  log_dee = s"log(dee + 1)"
+  log_dee = s"log({dee} + 1)"
 }
 into met
 
