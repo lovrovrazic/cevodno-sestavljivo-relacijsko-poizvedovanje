@@ -7,11 +7,27 @@ WITH table_7 AS (
     `page.id` AS page_id,
     `type` AS _expr_6,
     duration,
-    `reader.id` AS _expr_11,
-    `page.immerse_page_group_id` AS _expr_12,
-    `page.immerse_page_index` AS _expr_13,
-    `tracker.timestamp` AS _expr_14,
-    `story.company.id` AS _expr_15
+    `read.utm.content` AS _expr_11,
+    `read.utm.term` AS _expr_12,
+    `read.utm.campaign` AS _expr_13,
+    `read.utm.medium` AS _expr_14,
+    `read.utm.source` AS _expr_15,
+    `agent.browser.version` AS _expr_16,
+    `agent.browser.name` AS _expr_17,
+    `agent.os.version` AS _expr_18,
+    `agent.os.name` AS _expr_19,
+    `agent.referer.type` AS _expr_20,
+    `agent.referer.label` AS _expr_21,
+    `agent.location.state` AS _expr_22,
+    `agent.device.type` AS _expr_23,
+    `agent.source` AS _expr_24,
+    `agent.location.country` AS _expr_25,
+    `story.author.id` AS _expr_26,
+    `reader.id` AS _expr_27,
+    `page.immerse_page_group_id` AS _expr_28,
+    `page.immerse_page_index` AS _expr_29,
+    `tracker.timestamp` AS _expr_30,
+    `story.company.id` AS _expr_31
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -82,11 +98,27 @@ table_6 AS (
     d.chapter_topics,
     d.doc_topics,
     table_7._expr_11,
-    d.company,
     table_7._expr_12,
     table_7._expr_13,
     table_7._expr_14,
-    table_7._expr_15
+    table_7._expr_15,
+    table_7._expr_16,
+    table_7._expr_17,
+    table_7._expr_18,
+    table_7._expr_19,
+    table_7._expr_20,
+    table_7._expr_21,
+    table_7._expr_22,
+    table_7._expr_23,
+    table_7._expr_24,
+    table_7._expr_25,
+    table_7._expr_26,
+    table_7._expr_27,
+    d.company,
+    table_7._expr_28,
+    table_7._expr_29,
+    table_7._expr_30,
+    table_7._expr_31
   FROM
     table_7
     INNER JOIN d ON d.id = table_7.story_id
@@ -110,25 +142,25 @@ table_5 AS (
     table_6.story_id,
     table_6.story_personalisation_id,
     table_6.page_id,
-    date_format(table_6._expr_14, 'yyyy-MM-dd') AS read_date,
+    date_format(table_6._expr_30, 'yyyy-MM-dd') AS read_date,
     FIRST_VALUE(table_6.company) AS team_id,
-    FIRST_VALUE(table_6._expr_11) AS reader_id,
-    FIRST_VALUE(`story.author.id`) AS story_author_id,
-    FIRST_VALUE(`agent.location.country`) AS agent_location_country,
-    FIRST_VALUE(`agent.source`) AS agent_source,
-    FIRST_VALUE(`agent.device.type`) AS agent_device_type,
-    FIRST_VALUE(`agent.location.state`) AS agent_location_state,
-    FIRST_VALUE(`agent.referer.label`) AS agent_referer_label,
-    FIRST_VALUE(`agent.referer.type`) AS agent_referer_type,
-    FIRST_VALUE(`agent.os.name`) AS agent_os_name,
-    FIRST_VALUE(`agent.os.version`) AS agent_os_version,
-    FIRST_VALUE(`agent.browser.name`) AS agent_browser_name,
-    FIRST_VALUE(`agent.browser.version`) AS agent_browser_version,
-    FIRST_VALUE(`read.utm.source`) AS read_utm_source,
-    FIRST_VALUE(`read.utm.medium`) AS read_utm_medium,
-    FIRST_VALUE(`read.utm.campaign`) AS read_utm_campaign,
-    FIRST_VALUE(`read.utm.term`) AS read_utm_term,
-    FIRST_VALUE(`read.utm.content`) AS read_utm_content,
+    FIRST_VALUE(table_6._expr_27) AS reader_id,
+    FIRST_VALUE(table_6._expr_26) AS story_author_id,
+    FIRST_VALUE(table_6._expr_25) AS agent_location_country,
+    FIRST_VALUE(table_6._expr_24) AS agent_source,
+    FIRST_VALUE(table_6._expr_23) AS agent_device_type,
+    FIRST_VALUE(table_6._expr_22) AS agent_location_state,
+    FIRST_VALUE(table_6._expr_21) AS agent_referer_label,
+    FIRST_VALUE(table_6._expr_20) AS agent_referer_type,
+    FIRST_VALUE(table_6._expr_19) AS agent_os_name,
+    FIRST_VALUE(table_6._expr_18) AS agent_os_version,
+    FIRST_VALUE(table_6._expr_17) AS agent_browser_name,
+    FIRST_VALUE(table_6._expr_16) AS agent_browser_version,
+    FIRST_VALUE(table_6._expr_15) AS read_utm_source,
+    FIRST_VALUE(table_6._expr_14) AS read_utm_medium,
+    FIRST_VALUE(table_6._expr_13) AS read_utm_campaign,
+    FIRST_VALUE(table_6._expr_12) AS read_utm_term,
+    FIRST_VALUE(table_6._expr_11) AS read_utm_content,
     FIRST_VALUE(table_6.doc_topics) AS doc_topics,
     FIRST_VALUE(table_6.chapter_topics) AS chapter_topics,
     COUNT(*) AS number_of_events,
@@ -138,9 +170,9 @@ table_5 AS (
       OR table_6._expr_6 = 'immerse_page_turn' THEN concat(
         table_6.page_id,
         '_',
-        coalesce(table_6._expr_12, 'unknown'),
+        coalesce(table_6._expr_28, 'unknown'),
         '_',
-        coalesce(table_6._expr_13, 'unknown')
+        coalesce(table_6._expr_29, 'unknown')
       )
       ELSE NULL
     END AS _expr_7,
@@ -163,7 +195,7 @@ table_5 AS (
     ) AS _expr_10
   FROM
     table_6
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_15
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_31
     OR bi.scope = 'Global'
   WHERE
     bi.ip IS NULL
