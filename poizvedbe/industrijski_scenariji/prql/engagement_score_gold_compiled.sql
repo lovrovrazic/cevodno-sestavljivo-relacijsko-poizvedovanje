@@ -225,16 +225,12 @@ ana AS (
     array_agg(DISTINCT _expr_7) AS distinct_immerse_pages_read_v2,
     COALESCE(
       SUM(
-        COALESCE(
-          CASE
-            WHEN _expr_6 = 'surf' THEN 1
-            ELSE NULL
-          END > 1,
-          false
-        )
+        case
+          when _expr_6 = 'surf' then 1
+        end
       ),
       0
-    ) AS is_read,
+    ) > 0 AS is_read,
     COALESCE(
       SUM(
         case
@@ -265,18 +261,7 @@ ana AS (
     page_id,
     read_date
   HAVING
-    COALESCE(
-      SUM(
-        COALESCE(
-          CASE
-            WHEN _expr_6 = 'surf' THEN 1
-            ELSE NULL
-          END > 1,
-          false
-        )
-      ),
-      0
-    ) = true
+    is_read
 ),
 table_1 AS (
   SELECT
