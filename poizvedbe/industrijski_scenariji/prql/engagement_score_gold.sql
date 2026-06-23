@@ -7,11 +7,11 @@ from (
     created,
     company,
     tenant_name = __turtl__tenant_name,
-    doc_topics = s"from_json(topics, 'array<string>')",
+    doc_topics = s"from_json({topics}, 'array<string>')",
     publishedpages,
     chapter_from_json = case [
-      publishedpages == '[]' || publishedpages == null => s"from_json(pages, 'array<struct<_id:string, topics:array<string>>>')",
-      true => s"from_json(publishedpages, 'array<struct<_id:string, topics:array<string>>>')"
+      publishedpages == '[]' || publishedpages == null => s"from_json({pages}, 'array<struct<_id:string, topics:array<string>>>')",
+      true => s"from_json({publishedpages}, 'array<struct<_id:string, topics:array<string>>>')"
     ]
   }
 )
@@ -27,8 +27,8 @@ select !{
 into c
 from c
 derive {
-  chapter_id = s"chapter._id",
-  chapter_topics = s"chapter.topics"
+  chapter_id = s"{chapter}._id",
+  chapter_topics = s"{chapter}.topics"
 }
 select !{
   chapter
@@ -83,32 +83,32 @@ derive {
 }
 group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_date} (
   aggregate {
-    team_id = first d.company,
-    reader_id = first reader_id,
-    story_author_id = first story_author_id,
-    agent_location_country = first agent_location_country,
-    agent_source = first agent_source,
-    agent_device_type = first agent_device_type,
-    agent_location_state = first agent_location_state,
-    agent_referer_label = first agent_referer_label,
-    agent_referer_type = first agent_referer_type,
-    agent_os_name = first agent_os_name,
-    agent_os_version = first agent_os_version,
-    agent_browser_name = first agent_browser_name,
-    agent_browser_version = first agent_browser_version,
-    read_utm_source = first read_utm_source,
-    read_utm_medium = first read_utm_medium,
-    read_utm_campaign = first read_utm_campaign,
-    read_utm_term = first read_utm_term,
-    read_utm_content = first read_utm_content,
-    doc_topics = first d.doc_topics,
-    chapter_topics = first d.chapter_topics,
+    team_id = s"first({d.company})",
+    reader_id = s"first({reader_id})",
+    story_author_id = s"first({story_author_id})",
+    agent_location_country = s"first({agent_location_country})",
+    agent_source = s"first({agent_source})",
+    agent_device_type = s"first({agent_device_type})",
+    agent_location_state = s"first({agent_location_state})",
+    agent_referer_label = s"first({agent_referer_label})",
+    agent_referer_type = s"first({agent_referer_type})",
+    agent_os_name = s"first({agent_os_name})",
+    agent_os_version = s"first({agent_os_version})",
+    agent_browser_name = s"first({agent_browser_name})",
+    agent_browser_version = s"first({agent_browser_version})",
+    read_utm_source = s"first({read_utm_source})",
+    read_utm_medium = s"first({read_utm_medium})",
+    read_utm_campaign = s"first({read_utm_campaign})",
+    read_utm_term = s"first({read_utm_term})",
+    read_utm_content = s"first({read_utm_content})",
+    doc_topics = s"first({d.doc_topics})",
+    chapter_topics = s"first({d.chapter_topics})",
     number_of_events = count {},
-    surf_time_ms = ((sum (case [e_type == "surf" => e.duration ?? 0])) ?? 0),
-    immerse_time_ms = ((sum (case [(e_type | in ['immersion', 'immersion_viewed', 'immerse_page_turn']) => e.duration ?? 0])) ?? 0),
     distinct_surf_pages_read = s"array_agg(DISTINCT {surf_page_read})",
     distinct_immerse_pages_read_v2 = s"array_agg(DISTINCT {immerse_page_read})",
-    is_read = sum (case [e_type == 'surf' => 1]) > 1 ?? false
+    is_read = sum (case [e_type == 'surf' => 1]) > 1 ?? false,
+    surf_time_ms = sum (s"case when {e_type} = 'surf' then coalesce({e.duration}, 0) end"),
+    immerse_time_ms = sum(s"case when e_type in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce(e.duration, 0) end")
   }
 )
 filter is_read == true
@@ -230,3 +230,8 @@ select {
      engagement_score
 }
 sort {-engagement_score}
+
+
+
+
+

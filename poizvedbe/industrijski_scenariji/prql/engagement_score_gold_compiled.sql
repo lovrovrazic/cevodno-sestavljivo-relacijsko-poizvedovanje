@@ -1,4 +1,4 @@
-WITH table_7 AS (
+WITH table_6 AS (
   SELECT
     `read.id` AS read_id,
     `story.tenant` AS story_tenant,
@@ -7,27 +7,27 @@ WITH table_7 AS (
     `page.id` AS page_id,
     `type` AS _expr_6,
     duration,
-    `read.utm.content` AS _expr_11,
-    `read.utm.term` AS _expr_12,
-    `read.utm.campaign` AS _expr_13,
-    `read.utm.medium` AS _expr_14,
-    `read.utm.source` AS _expr_15,
-    `agent.browser.version` AS _expr_16,
-    `agent.browser.name` AS _expr_17,
-    `agent.os.version` AS _expr_18,
-    `agent.os.name` AS _expr_19,
-    `agent.referer.type` AS _expr_20,
-    `agent.referer.label` AS _expr_21,
-    `agent.location.state` AS _expr_22,
-    `agent.device.type` AS _expr_23,
-    `agent.source` AS _expr_24,
-    `agent.location.country` AS _expr_25,
-    `story.author.id` AS _expr_26,
-    `reader.id` AS _expr_27,
-    `page.immerse_page_group_id` AS _expr_28,
-    `page.immerse_page_index` AS _expr_29,
-    `tracker.timestamp` AS _expr_30,
-    `story.company.id` AS _expr_31
+    `read.utm.content` AS _expr_9,
+    `read.utm.term` AS _expr_10,
+    `read.utm.campaign` AS _expr_11,
+    `read.utm.medium` AS _expr_12,
+    `read.utm.source` AS _expr_13,
+    `agent.browser.version` AS _expr_14,
+    `agent.browser.name` AS _expr_15,
+    `agent.os.version` AS _expr_16,
+    `agent.os.name` AS _expr_17,
+    `agent.referer.type` AS _expr_18,
+    `agent.referer.label` AS _expr_19,
+    `agent.location.state` AS _expr_20,
+    `agent.device.type` AS _expr_21,
+    `agent.source` AS _expr_22,
+    `agent.location.country` AS _expr_23,
+    `story.author.id` AS _expr_24,
+    `reader.id` AS _expr_25,
+    `page.immerse_page_group_id` AS _expr_26,
+    `page.immerse_page_index` AS _expr_27,
+    `tracker.timestamp` AS _expr_28,
+    `story.company.id` AS _expr_29
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -86,55 +86,6 @@ d AS (
   FROM
     c
 ),
-table_6 AS (
-  SELECT
-    table_7.read_id,
-    table_7.story_tenant,
-    table_7.story_id,
-    table_7.story_personalisation_id,
-    table_7.page_id,
-    table_7._expr_6,
-    table_7.duration,
-    d.chapter_topics,
-    d.doc_topics,
-    table_7._expr_11,
-    table_7._expr_12,
-    table_7._expr_13,
-    table_7._expr_14,
-    table_7._expr_15,
-    table_7._expr_16,
-    table_7._expr_17,
-    table_7._expr_18,
-    table_7._expr_19,
-    table_7._expr_20,
-    table_7._expr_21,
-    table_7._expr_22,
-    table_7._expr_23,
-    table_7._expr_24,
-    table_7._expr_25,
-    table_7._expr_26,
-    table_7._expr_27,
-    d.company,
-    table_7._expr_28,
-    table_7._expr_29,
-    table_7._expr_30,
-    table_7._expr_31
-  FROM
-    table_7
-    INNER JOIN d ON d.id = table_7.story_id
-    AND (
-      d.chapter_id = table_7.page_id
-      OR d.chapter_id IS NULL
-    )
-    LEFT OUTER JOIN uc_production.hevo.mongo_personalisations AS p ON p.flipbook = table_7.story_id
-    AND p._id = table_7.story_personalisation_id
-  WHERE
-    table_7.page_id <> 'COOKIE'
-    AND (
-      p.deleted IS NULL
-      OR p.deleted = false
-    )
-),
 table_5 AS (
   SELECT
     table_6.read_id,
@@ -142,113 +93,104 @@ table_5 AS (
     table_6.story_id,
     table_6.story_personalisation_id,
     table_6.page_id,
-    date_format(table_6._expr_30, 'yyyy-MM-dd') AS read_date,
-    FIRST_VALUE(table_6.company) AS team_id,
-    FIRST_VALUE(table_6._expr_27) AS reader_id,
-    FIRST_VALUE(table_6._expr_26) AS story_author_id,
-    FIRST_VALUE(table_6._expr_25) AS agent_location_country,
-    FIRST_VALUE(table_6._expr_24) AS agent_source,
-    FIRST_VALUE(table_6._expr_23) AS agent_device_type,
-    FIRST_VALUE(table_6._expr_22) AS agent_location_state,
-    FIRST_VALUE(table_6._expr_21) AS agent_referer_label,
-    FIRST_VALUE(table_6._expr_20) AS agent_referer_type,
-    FIRST_VALUE(table_6._expr_19) AS agent_os_name,
-    FIRST_VALUE(table_6._expr_18) AS agent_os_version,
-    FIRST_VALUE(table_6._expr_17) AS agent_browser_name,
-    FIRST_VALUE(table_6._expr_16) AS agent_browser_version,
-    FIRST_VALUE(table_6._expr_15) AS read_utm_source,
-    FIRST_VALUE(table_6._expr_14) AS read_utm_medium,
-    FIRST_VALUE(table_6._expr_13) AS read_utm_campaign,
-    FIRST_VALUE(table_6._expr_12) AS read_utm_term,
-    FIRST_VALUE(table_6._expr_11) AS read_utm_content,
-    FIRST_VALUE(table_6.doc_topics) AS doc_topics,
-    FIRST_VALUE(table_6.chapter_topics) AS chapter_topics,
-    COUNT(*) AS number_of_events,
     table_6._expr_6,
+    table_6.duration,
+    d.chapter_topics,
+    d.doc_topics,
+    table_6._expr_9,
+    table_6._expr_10,
+    table_6._expr_11,
+    table_6._expr_12,
+    table_6._expr_13,
+    table_6._expr_14,
+    table_6._expr_15,
+    table_6._expr_16,
+    table_6._expr_17,
+    table_6._expr_18,
+    table_6._expr_19,
+    table_6._expr_20,
+    table_6._expr_21,
+    table_6._expr_22,
+    table_6._expr_23,
+    table_6._expr_24,
+    table_6._expr_25,
+    d.company,
+    table_6._expr_26,
+    table_6._expr_27,
+    table_6._expr_28,
+    table_6._expr_29
+  FROM
+    table_6
+    INNER JOIN d ON d.id = table_6.story_id
+    AND (
+      d.chapter_id = table_6.page_id
+      OR d.chapter_id IS NULL
+    )
+    LEFT OUTER JOIN uc_production.hevo.mongo_personalisations AS p ON p.flipbook = table_6.story_id
+    AND p._id = table_6.story_personalisation_id
+  WHERE
+    table_6.page_id <> 'COOKIE'
+    AND (
+      p.deleted IS NULL
+      OR p.deleted = false
+    )
+),
+table_4 AS (
+  SELECT
+    table_5.read_id,
+    table_5.story_tenant,
+    table_5.story_id,
+    table_5.story_personalisation_id,
+    table_5.page_id,
+    date_format(table_5._expr_28, 'yyyy-MM-dd') AS read_date,
+    table_5._expr_6,
+    table_5.duration,
     CASE
-      WHEN table_6._expr_6 = 'immersion_start'
-      OR table_6._expr_6 = 'immerse_page_turn' THEN concat(
-        table_6.page_id,
+      WHEN table_5._expr_6 = 'immersion_start'
+      OR table_5._expr_6 = 'immerse_page_turn' THEN concat(
+        table_5.page_id,
         '_',
-        coalesce(table_6._expr_28, 'unknown'),
+        coalesce(table_5._expr_26, 'unknown'),
         '_',
-        coalesce(table_6._expr_29, 'unknown')
+        coalesce(table_5._expr_27, 'unknown')
       )
       ELSE NULL
     END AS _expr_7,
     CASE
-      WHEN table_6._expr_6 = 'immersion'
-      OR table_6._expr_6 = 'surf'
-      OR table_6._expr_6 = 'surf_start'
-      AND table_6.page_id = 'END' THEN table_6.page_id
+      WHEN table_5._expr_6 = 'immersion'
+      OR table_5._expr_6 = 'surf'
+      OR table_5._expr_6 = 'surf_start'
+      AND table_5.page_id = 'END' THEN table_5.page_id
       ELSE NULL
     END AS _expr_8,
-    table_6.duration,
-    COALESCE(
-      SUM(
-        CASE
-          WHEN table_6._expr_6 = 'surf' THEN COALESCE(table_6.duration, 0)
-          ELSE NULL
-        END
-      ),
-      0
-    ) AS _expr_10
+    table_5.chapter_topics,
+    table_5.doc_topics,
+    table_5._expr_9,
+    table_5._expr_10,
+    table_5._expr_11,
+    table_5._expr_12,
+    table_5._expr_13,
+    table_5._expr_14,
+    table_5._expr_15,
+    table_5._expr_16,
+    table_5._expr_17,
+    table_5._expr_18,
+    table_5._expr_19,
+    table_5._expr_20,
+    table_5._expr_21,
+    table_5._expr_22,
+    table_5._expr_23,
+    table_5._expr_24,
+    table_5._expr_25,
+    table_5.company,
+    table_5._expr_26,
+    table_5._expr_27
   FROM
-    table_6
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_6._expr_31
+    table_5
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.company_id = table_5._expr_29
     OR bi.scope = 'Global'
   WHERE
     bi.ip IS NULL
-),
-table_4 AS (
-  SELECT
-    read_id,
-    story_tenant,
-    story_id,
-    story_personalisation_id,
-    page_id,
-    read_date,
-    team_id,
-    reader_id,
-    story_author_id,
-    agent_location_country,
-    agent_source,
-    agent_device_type,
-    agent_location_state,
-    agent_referer_label,
-    agent_referer_type,
-    agent_os_name,
-    agent_os_version,
-    agent_browser_name,
-    agent_browser_version,
-    read_utm_source,
-    read_utm_medium,
-    read_utm_campaign,
-    read_utm_term,
-    read_utm_content,
-    doc_topics,
-    chapter_topics,
-    number_of_events,
-    COALESCE(_expr_10, 0) AS surf_time_ms,
-    _expr_6,
-    _expr_7,
-    _expr_8,
-    COALESCE(
-      SUM(
-        CASE
-          WHEN _expr_6 IN (
-            'immersion',
-            'immersion_viewed',
-            'immerse_page_turn'
-          ) THEN COALESCE(duration, 0)
-          ELSE NULL
-        END
-      ),
-      0
-    ) AS _expr_9,
-    duration
-  FROM
-    table_5
 ),
 ana AS (
   SELECT
@@ -258,29 +200,27 @@ ana AS (
     story_personalisation_id,
     page_id,
     read_date,
-    team_id,
-    reader_id,
-    story_author_id,
-    agent_location_country,
-    agent_source,
-    agent_device_type,
-    agent_location_state,
-    agent_referer_label,
-    agent_referer_type,
-    agent_os_name,
-    agent_os_version,
-    agent_browser_name,
-    agent_browser_version,
-    read_utm_source,
-    read_utm_medium,
-    read_utm_campaign,
-    read_utm_term,
-    read_utm_content,
-    doc_topics,
-    chapter_topics,
-    number_of_events,
-    surf_time_ms,
-    COALESCE(_expr_9, 0) AS immerse_time_ms,
+    first(company) AS team_id,
+    first(_expr_25) AS reader_id,
+    first(_expr_24) AS story_author_id,
+    first(_expr_23) AS agent_location_country,
+    first(_expr_22) AS agent_source,
+    first(_expr_21) AS agent_device_type,
+    first(_expr_20) AS agent_location_state,
+    first(_expr_19) AS agent_referer_label,
+    first(_expr_18) AS agent_referer_type,
+    first(_expr_17) AS agent_os_name,
+    first(_expr_16) AS agent_os_version,
+    first(_expr_15) AS agent_browser_name,
+    first(_expr_14) AS agent_browser_version,
+    first(_expr_13) AS read_utm_source,
+    first(_expr_12) AS read_utm_medium,
+    first(_expr_11) AS read_utm_campaign,
+    first(_expr_10) AS read_utm_term,
+    first(_expr_9) AS read_utm_content,
+    first(doc_topics) AS doc_topics,
+    first(chapter_topics) AS chapter_topics,
+    COUNT(*) AS number_of_events,
     array_agg(DISTINCT _expr_8) AS distinct_surf_pages_read,
     array_agg(DISTINCT _expr_7) AS distinct_immerse_pages_read_v2,
     COALESCE(
@@ -294,7 +234,27 @@ ana AS (
         )
       ),
       0
-    ) AS is_read
+    ) AS is_read,
+    COALESCE(
+      SUM(
+        case
+          when _expr_6 = 'surf' then coalesce(duration, 0)
+        end
+      ),
+      0
+    ) AS surf_time_ms,
+    COALESCE(
+      SUM(
+        case
+          when e_type in (
+            'immersion',
+            'immersion_viewed',
+            'immerse_page_turn'
+          ) then coalesce(e.duration, 0)
+        end
+      ),
+      0
+    ) AS immerse_time_ms
   FROM
     table_4
   GROUP BY
