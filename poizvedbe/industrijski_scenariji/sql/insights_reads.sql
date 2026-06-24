@@ -88,7 +88,16 @@ reads_total as (
 )
 
 select
-  sha2(concat(string(rw.tenant), string(rw.story_id), string(rw.story_publishedVersion), string(rw.windowStart), string(rw.windowEnd)), 256) as id,
+  sha2(
+    concat(
+      string(rw.tenant),
+      string(rw.story_id),
+      string(rw.story_publishedVersion),
+      string(rw.windowStart),
+      string(rw.windowEnd)
+    ),
+    256
+  ) as id,
   rw.tenant as tenantName,
   first(t._id) as tenantId,
   rw.story_id AS docId,

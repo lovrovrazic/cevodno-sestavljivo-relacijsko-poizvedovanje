@@ -56,9 +56,24 @@ FROM reads_window rw
      first(t._id) AS tenantId,
      first(rt.reads) AS reads,
      first(rw.reads) AS readsChange
-   GROUP BY rw.tenant, rw.story_id, rw.story_company_id, rw.story_publishedVersion, rw.windowStart, rw.windowEnd
+   GROUP BY
+     rw.tenant,
+     rw.story_id,
+     rw.story_company_id,
+     rw.story_publishedVersion,
+     rw.windowStart,
+     rw.windowEnd
 |> SELECT
-     sha2(concat(string(tenant), string(story_id), string(story_publishedVersion), string(windowStart), string(windowEnd)), 256) AS id,
+     sha2(
+        concat(
+          string(tenant),
+          string(story_id),
+          string(story_publishedVersion),
+          string(windowStart),
+          string(windowEnd)
+        ),
+        256
+     ) AS id,
      tenant AS tenantName,
      tenantId,
      story_id AS docId,
