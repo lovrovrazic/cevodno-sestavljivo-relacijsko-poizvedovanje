@@ -12,7 +12,8 @@ from (
     doc_topics = s"from_json({topics}, 'array<string>')",
     publishedpages,
     chapter_from_json = case [
-      publishedpages == '[]' || publishedpages == null => s"from_json({pages}, 'array<struct<_id:string, topics:array<string>>>')",
+      publishedpages == '[]' || publishedpages == null
+        \=> s"from_json({pages}, 'array<struct<_id:string, topics:array<string>>>')",
       true => s"from_json({publishedpages}, 'array<struct<_id:string, topics:array<string>>>')"
     ]
   }

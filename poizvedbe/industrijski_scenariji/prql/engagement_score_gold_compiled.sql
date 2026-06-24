@@ -226,8 +226,8 @@ ana AS (
     FIRST_VALUE(doc_topics) AS doc_topics,
     FIRST_VALUE(chapter_topics) AS chapter_topics,
     COUNT(*) AS number_of_events,
-    array_agg(DISTINCT _expr_7) AS distinct_surf_pages_read,
-    array_agg(DISTINCT _expr_6) AS distinct_immerse_pages_read_v2,
+    array_agg(distinct _expr_7) AS distinct_surf_pages_read,
+    array_agg(distinct _expr_6) AS distinct_immerse_pages_read_v2,
     COALESCE(
       SUM(
         case
