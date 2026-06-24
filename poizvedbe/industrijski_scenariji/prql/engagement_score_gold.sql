@@ -34,7 +34,6 @@ select !{
   chapter
 }
 into d
-
 from e = uc_production.analytics.silver
 filter (year == 2026 && month == 6 && day == 15 && tenant == 'team')
 derive {
@@ -114,7 +113,6 @@ group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_
 )
 filter s"is_read"
 into ana
-
 from ana
 join side:left chapter_pages = (
   from (s"""
@@ -181,7 +179,6 @@ derive {
   log_dee = s"log({dee} + 1)"
 }
 into met
-
 from met
 derive {
   max_log_dts = 13.025439534395558,
@@ -231,8 +228,3 @@ select {
      engagement_score
 }
 sort {-engagement_score}
-
-
-
-
-
