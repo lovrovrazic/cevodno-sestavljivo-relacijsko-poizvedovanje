@@ -48,26 +48,13 @@ reads_window as (
     reads > 0
 ),
 
-windows as (
-  select 
-    story_id,
-    windowStart,
-    windowEnd
-  from 
-    reads_window
-  group by
-    story_id,
-    windowStart,
-    windowEnd
-),
-
 reads_total as (
   select
     w.story_id,
     w.windowEnd,
     count(distinct read_id) as reads
   from 
-    windows w
+    reads_window w
   left join 
     uc_production.analytics.gold e on e.story_id = w.story_id
   left join
