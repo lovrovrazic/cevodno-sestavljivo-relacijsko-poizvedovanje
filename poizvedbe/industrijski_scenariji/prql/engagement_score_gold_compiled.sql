@@ -428,8 +428,6 @@ met AS (
 table_2 AS (
   SELECT
     reader_id,
-    `story.id`,
-    `story.personalisation.id`,
     team_id,
     story_author_id,
     agent_location_country,
@@ -451,6 +449,8 @@ table_2 AS (
     chapter_topics,
     `story.tenant`,
     `page.id`,
+    `story.personalisation.id`,
+    `story.id`,
     read_date,
     log_dee,
     0.6931471805599453 AS _expr_0,
@@ -467,8 +467,8 @@ table_2 AS (
 SELECT
   table_2.read_date AS year_day,
   table_2.reader_id,
-  table_2.`story.id`,
-  table_2.`story.personalisation.id`,
+  table_2.`story.id` AS story_id,
+  table_2.`story.personalisation.id` AS story_personalisation_id,
   table_2.`page.id` AS chapter_id,
   table_2.`story.tenant` AS tenant,
   table_2.team_id,
