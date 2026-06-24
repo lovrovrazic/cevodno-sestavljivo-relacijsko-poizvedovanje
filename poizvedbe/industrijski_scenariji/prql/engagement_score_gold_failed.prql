@@ -1,5 +1,5 @@
 
 
-is_read = sum (case [e_type == 'surf' => 1]) > 1 ?? false,
+is_read = (sum (case [e_type == 'surf' => 1]) > 1) ?? false,
 surf_time_ms = ((sum (case [e_type == "surf" => e.duration ?? 0])) ?? 0),
 immerse_time_ms = ((sum (case [(e_type | in ['immersion', 'immersion_viewed', 'immerse_page_turn']) => e.duration ?? 0])) ?? 0),

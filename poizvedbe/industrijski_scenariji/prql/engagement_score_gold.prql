@@ -75,8 +75,8 @@ group {e.`read.id`, e.`story.tenant`, e.`story.id`, e.`story.personalisation.id`
     doc_topics = first d.doc_topics,
     chapter_topics = first d.chapter_topics,
     number_of_events = count {},
-    distinct_surf_pages_read = s"array_agg(DISTINCT {surf_page_read})",
-    distinct_immerse_pages_read_v2 = s"array_agg(DISTINCT {immerse_page_read})",
+    distinct_surf_pages_read = s"array_agg(distinct {surf_page_read})",
+    distinct_immerse_pages_read_v2 = s"array_agg(distinct {immerse_page_read})",
     is_read = (sum (s"case when {e.`type`} = 'surf' then 1 end")) > 0,
     surf_time_ms = sum(s"case when {e.`type`} = 'surf' then coalesce({e.duration}, 0) end"),
     immerse_time_ms = sum(s"case when {e.`type`} in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce({e.duration}, 0) end")
