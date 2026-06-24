@@ -1,6 +1,4 @@
-with
-
-deleted_persos as (
+with deleted_persos as (
   select
     _id as personalisation_id
   from 

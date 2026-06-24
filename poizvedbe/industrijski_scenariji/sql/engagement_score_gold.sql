@@ -76,10 +76,8 @@ with
       coalesce(
         sum(
           case
-            when
-              e.type in ('immersion', 'immersion_viewed', 'immerse_page_turn')
-            then
-              coalesce(e.duration, 0)
+            when e.type in ('immersion', 'immersion_viewed', 'immerse_page_turn')
+            then coalesce(e.duration, 0)
           end
         ),
         0
@@ -232,12 +230,10 @@ with
       read_utm_content,
       doc_topics,
       chapter_topics,
-      array_distinct(
-        flatten(
-          flatten(
-            array(array_agg(distinct_surf_pages_read), array_agg(distinct_immerse_pages_read_v2))
-          )
-        )
+      array_distinct(flatten(flatten(array(
+        array_agg(distinct_surf_pages_read),
+        array_agg(distinct_immerse_pages_read_v2)
+      )))
       ) as read_pages_array,
       array_size(read_pages_array) as number_of_read_pages,
       coalesce(

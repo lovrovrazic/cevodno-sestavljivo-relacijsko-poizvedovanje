@@ -1,6 +1,4 @@
-WITH
-
-deleted_persos AS (
+WITH deleted_persos AS (
   FROM uc_production.hevo.mongo_personalisations
   |> WHERE deleted = true AND created >= '2023-03-01'
   |> SELECT _id AS personalisation_id
