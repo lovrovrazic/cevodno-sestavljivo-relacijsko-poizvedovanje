@@ -70,7 +70,7 @@ derive {
 	id = f"{tenant}{story_id}{story_publishedVersion}{windowStart}{windowEnd}"
 }
 select {
-	id = s"sha2({id})",
+	id = s"sha2({id}, 256)",
 	tenantName = tenant,
 	tenantId,
   docId = story_id,

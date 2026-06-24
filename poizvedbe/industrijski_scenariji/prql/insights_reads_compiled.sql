@@ -127,7 +127,8 @@ SELECT
       `story_publishedVersion`,
       `windowStart`,
       `windowEnd`
-    )
+    ),
+    256
   ) AS id,
   tenant AS `tenantName`,
   `tenantId`,
