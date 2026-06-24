@@ -120,6 +120,15 @@ table_0 AS (
     rw.`windowEnd`
 )
 SELECT
+  sha2(
+    CONCAT(
+      tenant,
+      story_id,
+      `story_publishedVersion`,
+      `windowStart`,
+      `windowEnd`
+    )
+  ) AS id,
   tenant AS `tenantName`,
   `tenantId`,
   story_id AS `docId`,
