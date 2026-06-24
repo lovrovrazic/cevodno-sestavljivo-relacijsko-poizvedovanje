@@ -1,34 +1,34 @@
 WITH table_6 AS (
   SELECT
-    `read.id` AS read_id,
-    `story.tenant` AS story_tenant,
-    `story.id` AS story_id,
-    `story.personalisation.id` AS story_personalisation_id,
-    `page.id` AS page_id,
-    `type` AS _expr_6,
+    `read.id`,
+    `story.tenant`,
+    `story.id`,
+    `story.personalisation.id`,
+    `page.id`,
+    type,
     duration,
-    `read.utm.content` AS _expr_9,
-    `read.utm.term` AS _expr_10,
-    `read.utm.campaign` AS _expr_11,
-    `read.utm.medium` AS _expr_12,
-    `read.utm.source` AS _expr_13,
-    `agent.browser.version` AS _expr_14,
-    `agent.browser.name` AS _expr_15,
-    `agent.os.version` AS _expr_16,
-    `agent.os.name` AS _expr_17,
-    `agent.referer.type` AS _expr_18,
-    `agent.referer.label` AS _expr_19,
-    `agent.location.state` AS _expr_20,
-    `agent.device.type` AS _expr_21,
-    `agent.source` AS _expr_22,
-    `agent.location.country` AS _expr_23,
-    `story.author.id` AS _expr_24,
-    `reader.id` AS _expr_25,
-    `page.immerse_page_group_id` AS _expr_26,
-    `page.immerse_page_index` AS _expr_27,
-    `tracker.timestamp` AS _expr_28,
-    `agent.ip` AS _expr_29,
-    `story.company.id` AS _expr_30
+    `read.utm.content`,
+    `read.utm.term`,
+    `read.utm.campaign`,
+    `read.utm.medium`,
+    `read.utm.source`,
+    `agent.browser.version`,
+    `agent.browser.name`,
+    `agent.os.version`,
+    `agent.os.name`,
+    `agent.referer.type`,
+    `agent.referer.label`,
+    `agent.location.state`,
+    `agent.device.type`,
+    `agent.source`,
+    `agent.location.country`,
+    `story.author.id`,
+    `reader.id`,
+    `page.immerse_page_group_id`,
+    `page.immerse_page_index`,
+    `tracker.timestamp`,
+    `agent.ip`,
+    `story.company.id`
   FROM
     uc_production.analytics.silver AS e
   WHERE
@@ -89,49 +89,49 @@ d AS (
 ),
 table_5 AS (
   SELECT
-    table_6.read_id,
-    table_6.story_tenant,
-    table_6.story_id,
-    table_6.story_personalisation_id,
-    table_6.page_id,
-    table_6._expr_6,
+    table_6.`read.id`,
+    table_6.`story.tenant`,
+    table_6.`story.id`,
+    table_6.`story.personalisation.id`,
+    table_6.`page.id`,
+    table_6.type,
     table_6.duration,
     d.chapter_topics,
     d.doc_topics,
-    table_6._expr_9,
-    table_6._expr_10,
-    table_6._expr_11,
-    table_6._expr_12,
-    table_6._expr_13,
-    table_6._expr_14,
-    table_6._expr_15,
-    table_6._expr_16,
-    table_6._expr_17,
-    table_6._expr_18,
-    table_6._expr_19,
-    table_6._expr_20,
-    table_6._expr_21,
-    table_6._expr_22,
-    table_6._expr_23,
-    table_6._expr_24,
-    table_6._expr_25,
+    table_6.`read.utm.content`,
+    table_6.`read.utm.term`,
+    table_6.`read.utm.campaign`,
+    table_6.`read.utm.medium`,
+    table_6.`read.utm.source`,
+    table_6.`agent.browser.version`,
+    table_6.`agent.browser.name`,
+    table_6.`agent.os.version`,
+    table_6.`agent.os.name`,
+    table_6.`agent.referer.type`,
+    table_6.`agent.referer.label`,
+    table_6.`agent.location.state`,
+    table_6.`agent.device.type`,
+    table_6.`agent.source`,
+    table_6.`agent.location.country`,
+    table_6.`story.author.id`,
+    table_6.`reader.id`,
     d.company,
-    table_6._expr_26,
-    table_6._expr_27,
-    table_6._expr_28,
-    table_6._expr_29,
-    table_6._expr_30
+    table_6.`page.immerse_page_group_id`,
+    table_6.`page.immerse_page_index`,
+    table_6.`tracker.timestamp`,
+    table_6.`agent.ip`,
+    table_6.`story.company.id`
   FROM
     table_6
-    INNER JOIN d ON d.id = table_6.story_id
+    INNER JOIN d ON d.id = table_6.`story.id`
     AND (
-      d.chapter_id = table_6.page_id
+      d.chapter_id = table_6.`page.id`
       OR d.chapter_id IS NULL
     )
-    LEFT OUTER JOIN uc_production.hevo.mongo_personalisations AS p ON p.flipbook = table_6.story_id
-    AND p._id = table_6.story_personalisation_id
+    LEFT OUTER JOIN uc_production.hevo.mongo_personalisations AS p ON p.flipbook = table_6.`story.id`
+    AND p._id = table_6.`story.personalisation.id`
   WHERE
-    table_6.page_id <> 'COOKIE'
+    table_6.`page.id` <> 'COOKIE'
     AND (
       p.deleted IS NULL
       OR p.deleted = false
@@ -139,59 +139,59 @@ table_5 AS (
 ),
 table_4 AS (
   SELECT
-    table_5.read_id,
-    table_5.story_tenant,
-    table_5.story_id,
-    table_5.story_personalisation_id,
-    table_5.page_id,
-    date_format(table_5._expr_28, 'yyyy-MM-dd') AS read_date,
-    table_5._expr_6,
+    table_5.`read.id`,
+    table_5.`story.tenant`,
+    table_5.`story.id`,
+    table_5.`story.personalisation.id`,
+    table_5.`page.id`,
+    date_format(table_5.`tracker.timestamp`, 'yyyy-MM-dd') AS read_date,
+    table_5.type,
     table_5.duration,
     CASE
-      WHEN table_5._expr_6 = 'immersion_start'
-      OR table_5._expr_6 = 'immerse_page_turn' THEN concat(
-        table_5.page_id,
+      WHEN table_5.type = 'immersion_start'
+      OR table_5.type = 'immerse_page_turn' THEN concat(
+        table_5.`page.id`,
         '_',
-        coalesce(table_5._expr_26, 'unknown'),
+        coalesce(table_5.`page.immerse_page_group_id`, 'unknown'),
         '_',
-        coalesce(table_5._expr_27, 'unknown')
+        coalesce(table_5.`page.immerse_page_index`, 'unknown')
       )
       ELSE NULL
-    END AS _expr_7,
+    END AS _expr_6,
     CASE
-      WHEN table_5._expr_6 = 'immersion'
-      OR table_5._expr_6 = 'surf'
-      OR table_5._expr_6 = 'surf_start'
-      AND table_5.page_id = 'END' THEN table_5.page_id
+      WHEN table_5.type = 'immersion'
+      OR table_5.type = 'surf'
+      OR table_5.type = 'surf_start'
+      AND table_5.`page.id` = 'END' THEN table_5.`page.id`
       ELSE NULL
-    END AS _expr_8,
+    END AS _expr_7,
     table_5.chapter_topics,
     table_5.doc_topics,
-    table_5._expr_9,
-    table_5._expr_10,
-    table_5._expr_11,
-    table_5._expr_12,
-    table_5._expr_13,
-    table_5._expr_14,
-    table_5._expr_15,
-    table_5._expr_16,
-    table_5._expr_17,
-    table_5._expr_18,
-    table_5._expr_19,
-    table_5._expr_20,
-    table_5._expr_21,
-    table_5._expr_22,
-    table_5._expr_23,
-    table_5._expr_24,
-    table_5._expr_25,
+    table_5.`read.utm.content`,
+    table_5.`read.utm.term`,
+    table_5.`read.utm.campaign`,
+    table_5.`read.utm.medium`,
+    table_5.`read.utm.source`,
+    table_5.`agent.browser.version`,
+    table_5.`agent.browser.name`,
+    table_5.`agent.os.version`,
+    table_5.`agent.os.name`,
+    table_5.`agent.referer.type`,
+    table_5.`agent.referer.label`,
+    table_5.`agent.location.state`,
+    table_5.`agent.device.type`,
+    table_5.`agent.source`,
+    table_5.`agent.location.country`,
+    table_5.`story.author.id`,
+    table_5.`reader.id`,
     table_5.company,
-    table_5._expr_26,
-    table_5._expr_27
+    table_5.`page.immerse_page_group_id`,
+    table_5.`page.immerse_page_index`
   FROM
     table_5
-    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.ip = table_5._expr_29
+    LEFT OUTER JOIN uc_production.dbt.int_banned_ips AS bi ON bi.ip = table_5.`agent.ip`
     AND (
-      bi.company_id = table_5._expr_30
+      bi.company_id = table_5.`story.company.id`
       OR bi.scope = 'Global'
     )
   WHERE
@@ -199,39 +199,39 @@ table_4 AS (
 ),
 ana AS (
   SELECT
-    read_id,
-    story_tenant,
-    story_id,
-    story_personalisation_id,
-    page_id,
+    `read.id`,
+    `story.tenant`,
+    `story.id`,
+    `story.personalisation.id`,
+    `page.id`,
     read_date,
     first(company) AS team_id,
-    first(_expr_25) AS reader_id,
-    first(_expr_24) AS story_author_id,
-    first(_expr_23) AS agent_location_country,
-    first(_expr_22) AS agent_source,
-    first(_expr_21) AS agent_device_type,
-    first(_expr_20) AS agent_location_state,
-    first(_expr_19) AS agent_referer_label,
-    first(_expr_18) AS agent_referer_type,
-    first(_expr_17) AS agent_os_name,
-    first(_expr_16) AS agent_os_version,
-    first(_expr_15) AS agent_browser_name,
-    first(_expr_14) AS agent_browser_version,
-    first(_expr_13) AS read_utm_source,
-    first(_expr_12) AS read_utm_medium,
-    first(_expr_11) AS read_utm_campaign,
-    first(_expr_10) AS read_utm_term,
-    first(_expr_9) AS read_utm_content,
+    first(`reader.id`) AS reader_id,
+    first(`story.author.id`) AS story_author_id,
+    first(`agent.location.country`) AS agent_location_country,
+    first(`agent.source`) AS agent_source,
+    first(`agent.device.type`) AS agent_device_type,
+    first(`agent.location.state`) AS agent_location_state,
+    first(`agent.referer.label`) AS agent_referer_label,
+    first(`agent.referer.type`) AS agent_referer_type,
+    first(`agent.os.name`) AS agent_os_name,
+    first(`agent.os.version`) AS agent_os_version,
+    first(`agent.browser.name`) AS agent_browser_name,
+    first(`agent.browser.version`) AS agent_browser_version,
+    first(`read.utm.source`) AS read_utm_source,
+    first(`read.utm.medium`) AS read_utm_medium,
+    first(`read.utm.campaign`) AS read_utm_campaign,
+    first(`read.utm.term`) AS read_utm_term,
+    first(`read.utm.content`) AS read_utm_content,
     first(doc_topics) AS doc_topics,
     first(chapter_topics) AS chapter_topics,
     COUNT(*) AS number_of_events,
-    array_agg(DISTINCT _expr_8) AS distinct_surf_pages_read,
-    array_agg(DISTINCT _expr_7) AS distinct_immerse_pages_read_v2,
+    array_agg(DISTINCT _expr_7) AS distinct_surf_pages_read,
+    array_agg(DISTINCT _expr_6) AS distinct_immerse_pages_read_v2,
     COALESCE(
       SUM(
         case
-          when _expr_6 = 'surf' then 1
+          when type = 'surf' then 1
         end
       ),
       0
@@ -239,7 +239,7 @@ ana AS (
     COALESCE(
       SUM(
         case
-          when _expr_6 = 'surf' then coalesce(duration, 0)
+          when type = 'surf' then coalesce(duration, 0)
         end
       ),
       0
@@ -247,7 +247,7 @@ ana AS (
     COALESCE(
       SUM(
         case
-          when _expr_6 in (
+          when type in (
             'immersion',
             'immersion_viewed',
             'immerse_page_turn'
@@ -259,11 +259,11 @@ ana AS (
   FROM
     table_4
   GROUP BY
-    read_id,
-    story_tenant,
-    story_id,
-    story_personalisation_id,
-    page_id,
+    `read.id`,
+    `story.tenant`,
+    `story.id`,
+    `story.personalisation.id`,
+    `page.id`,
     read_date
   HAVING
     is_read
@@ -289,10 +289,10 @@ table_3 AS (
   SELECT
     ana.read_date,
     ana.reader_id,
-    ana.story_id,
-    ana.story_personalisation_id,
-    ana.page_id,
-    ana.story_tenant,
+    ana.`story.id`,
+    ana.`story.personalisation.id`,
+    ana.`page.id`,
+    ana.`story.tenant`,
     ana.team_id,
     ana.story_author_id,
     ana.agent_location_country,
@@ -324,30 +324,32 @@ table_3 AS (
       )
     ) AS read_pages_array,
     COALESCE(
-      COALESCE(
-        SUM(
-          COALESCE(
-            COALESCE(ana.surf_time_ms, 0) + COALESCE(ana.immerse_time_ms, 0),
-            0
-          )
-        ),
-        0
-      ) / 1000,
+      (
+        COALESCE(
+          SUM(
+            COALESCE(
+              COALESCE(ana.surf_time_ms, 0) + COALESCE(ana.immerse_time_ms, 0),
+              0
+            )
+          ),
+          0
+        ) / 1000
+      ),
       0
     ) AS time_spent,
     COALESCE(SUM(ana.number_of_events), 0) AS total_number_of_events
   FROM
     ana
-    LEFT OUTER JOIN table_0 ON ana.story_id = table_0.chapter_story_id
-    AND ana.page_id = table_0.chapter_id
-    AND ana.story_tenant = table_0.tenant
+    LEFT OUTER JOIN table_0 ON ana.`story.id` = table_0.chapter_story_id
+    AND ana.`page.id` = table_0.chapter_id
+    AND ana.`story.tenant` = table_0.tenant
   GROUP BY
     ana.read_date,
     ana.reader_id,
-    ana.story_id,
-    ana.story_personalisation_id,
-    ana.page_id,
-    ana.story_tenant,
+    ana.`story.id`,
+    ana.`story.personalisation.id`,
+    ana.`page.id`,
+    ana.`story.tenant`,
     ana.team_id,
     ana.story_author_id,
     ana.agent_location_country,
@@ -373,10 +375,10 @@ met AS (
   SELECT
     read_date,
     reader_id,
-    story_id,
-    story_personalisation_id,
-    page_id,
-    story_tenant,
+    `story.id`,
+    `story.personalisation.id`,
+    `page.id`,
+    `story.tenant`,
     team_id,
     story_author_id,
     agent_location_country,
@@ -401,20 +403,24 @@ met AS (
     time_spent,
     total_number_of_events,
     array_size(read_pages_array) AS number_of_read_pages,
-    time_spent / array_size(read_pages_array) AS dts,
-    log(time_spent / array_size(read_pages_array) + 1) AS log_dts,
-    array_size(read_pages_array) / chapter_pages AS dcp_without_normalisation,
+    (time_spent / array_size(read_pages_array)) AS dts,
+    log((time_spent / array_size(read_pages_array)) + 1) AS log_dts,
+    (array_size(read_pages_array) / chapter_pages) AS dcp_without_normalisation,
     CASE
-      WHEN array_size(read_pages_array) / chapter_pages > 1 THEN 1
-      ELSE array_size(read_pages_array) / chapter_pages
+      WHEN (array_size(read_pages_array) / chapter_pages) > 1 THEN 1
+      ELSE (array_size(read_pages_array) / chapter_pages)
     END AS dcp_non_adjusted,
     CASE
-      WHEN array_size(read_pages_array) / chapter_pages > 1 THEN 1
-      ELSE array_size(read_pages_array) / chapter_pages
+      WHEN (array_size(read_pages_array) / chapter_pages) > 1 THEN 1
+      ELSE (array_size(read_pages_array) / chapter_pages)
     END * log10(chapter_pages + 1) AS dcp,
-    total_number_of_events / array_size(read_pages_array) AS dee,
+    (
+      total_number_of_events / array_size(read_pages_array)
+    ) AS dee,
     log(
-      total_number_of_events / array_size(read_pages_array) + 1
+      (
+        total_number_of_events / array_size(read_pages_array)
+      ) + 1
     ) AS log_dee
   FROM
     table_3
@@ -422,8 +428,8 @@ met AS (
 table_2 AS (
   SELECT
     reader_id,
-    story_id,
-    story_personalisation_id,
+    `story.id`,
+    `story.personalisation.id`,
     team_id,
     story_author_id,
     agent_location_country,
@@ -443,8 +449,8 @@ table_2 AS (
     read_utm_content,
     doc_topics,
     chapter_topics,
-    story_tenant,
-    page_id,
+    `story.tenant`,
+    `page.id`,
     read_date,
     log_dee,
     0.6931471805599453 AS _expr_0,
@@ -461,10 +467,10 @@ table_2 AS (
 SELECT
   table_2.read_date AS year_day,
   table_2.reader_id,
-  table_2.story_id,
-  table_2.story_personalisation_id,
-  table_2.page_id AS chapter_id,
-  table_2.story_tenant AS tenant,
+  table_2.`story.id`,
+  table_2.`story.personalisation.id`,
+  table_2.`page.id` AS chapter_id,
+  table_2.`story.tenant` AS tenant,
   table_2.team_id,
   ira.company_key,
   table_2.story_author_id,
@@ -485,19 +491,31 @@ SELECT
   table_2.read_utm_content,
   table_2.doc_topics,
   table_2.chapter_topics,
-  (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4) AS norm_dts,
-  (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2) AS norm_dcp,
-  (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0) AS norm_dee,
   (
-    (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4) + (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2) + (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0)
+    (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4)
+  ) AS norm_dts,
+  (
+    (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2)
+  ) AS norm_dcp,
+  (
+    (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0)
+  ) AS norm_dee,
+  (
+    (
+      (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4)
+    ) + (
+      (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2)
+    ) + (
+      (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0)
+    )
   ) * 100 AS engagement_score
 FROM
   table_2
   LEFT OUTER JOIN uc_production.aai.int_reader_accounts AS ira ON ira.reader_id = table_2.reader_id
-  AND ira.doc_id = table_2.story_id
-  AND ira.personalisation_id = table_2.story_personalisation_id
+  AND ira.doc_id = table_2.`story.id`
+  AND ira.personalisation_id = table_2.`story.personalisation.id`
   AND ira.team_id = table_2.team_id
-  AND ira.tenant = table_2.story_tenant
+  AND ira.tenant = table_2.`story.tenant`
 ORDER BY
   engagement_score DESC
 

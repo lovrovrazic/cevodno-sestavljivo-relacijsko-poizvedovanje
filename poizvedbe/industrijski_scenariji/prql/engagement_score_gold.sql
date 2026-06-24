@@ -1,3 +1,5 @@
+prql target:sql.mysql
+
 from (
   from uc_production.hevo.mongo_flipbooks
   filter (deleted == false)
@@ -36,79 +38,48 @@ select !{
 into d
 from e = uc_production.analytics.silver
 filter (year == 2026 && month == 6 && day == 15 && tenant == 'team')
-derive {
-  story_id = s"`story.id`",
-  story_personalisation_id = s"`story.personalisation.id`",
-  story_company_id = s"`story.company.id`",
-  reader_id = s"`reader.id`",
-  story_author_id = s"`story.author.id`",
-  agent_location_country = s"`agent.location.country`",
-  agent_source = s"`agent.source`",
-  agent_device_type = s"`agent.device.type`",
-  agent_location_state = s"`agent.location.state`",
-  agent_referer_label = s"`agent.referer.label`",
-  agent_referer_type = s"`agent.referer.type`",
-  agent_os_name = s"`agent.os.name`",
-  agent_os_version = s"`agent.os.version`",
-  agent_browser_name = s"`agent.browser.name`",
-  agent_browser_version = s"`agent.browser.version`",
-  agent_ip = s"`agent.ip`",
-  read_utm_source = s"`read.utm.source`",
-  read_utm_medium = s"`read.utm.medium`",
-  read_utm_campaign = s"`read.utm.campaign`",
-  read_utm_term = s"`read.utm.term`",
-  read_utm_content = s"`read.utm.content`",
-  story_tenant = s"`story.tenant`",
-  page_id = s"`page.id`",
-  e_type = s"`type`",
-  read_id = s"`read.id`",
-  duration,
-  tracker_timestamp = s"`tracker.timestamp`",
-  page_immerse_page_group_id = s"`page.immerse_page_group_id`",
-  page_immerse_page_index = s"`page.immerse_page_index`"
-}
-join side:inner d (d.id == story_id && (d.chapter_id == page_id || d.chapter_id == null))
-join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == story_id && p._id == story_personalisation_id)
-filter (page_id != 'COOKIE' && (p.deleted == null || p.deleted == false))
-join side:left bi = uc_production.dbt.int_banned_ips (bi.ip == agent_ip && (bi.company_id == story_company_id || bi.scope == 'Global'))
+join side:inner d (d.id == `story.id` && (d.chapter_id == `page.id` || d.chapter_id == null))
+join side:left p = uc_production.hevo.mongo_personalisations (p.flipbook == e.`story.id` && p._id == e.`story.personalisation.id`)
+filter (e.`page.id` != 'COOKIE' && (p.deleted == null || p.deleted == false))
+join side:left bi = uc_production.dbt.int_banned_ips (bi.ip == e.`agent.ip` && (bi.company_id == e.`story.company.id` || bi.scope == 'Global'))
 filter (bi.ip == null )
 derive {
-  read_date = s"date_format({tracker_timestamp}, 'yyyy-MM-dd')",
+  read_date = s"date_format({e.`tracker.timestamp`}, 'yyyy-MM-dd')",
   surf_page_read = case [
-    e_type == 'immersion' || e_type == 'surf' || (e_type == 'surf_start' && page_id == 'END') => page_id
+    e.`type` == 'immersion' || e.`type` == 'surf' || (e.`type` == 'surf_start' && e.`page.id` == 'END') => e.`page.id`
   ],
   immerse_page_read = case [
-    e_type == 'immersion_start' || e_type == 'immerse_page_turn' => s"concat({page_id}, '_', coalesce({page_immerse_page_group_id}, 'unknown'), '_', coalesce({page_immerse_page_index}, 'unknown'))"
+    e.`type` == 'immersion_start' || e.`type` == 'immerse_page_turn' => s"concat({`page.id`}, '_', coalesce({e.`page.immerse_page_group_id`}, 'unknown'), '_', coalesce({e.`page.immerse_page_index`}, 'unknown'))"
   ]
 }
-group {read_id, story_tenant, story_id, story_personalisation_id, page_id, read_date} (
+group {e.`read.id`, e.`story.tenant`, e.`story.id`, e.`story.personalisation.id`, e.`page.id`, read_date} (
   aggregate {
     team_id = s"first({d.company})",
-    reader_id = s"first({reader_id})",
-    story_author_id = s"first({story_author_id})",
-    agent_location_country = s"first({agent_location_country})",
-    agent_source = s"first({agent_source})",
-    agent_device_type = s"first({agent_device_type})",
-    agent_location_state = s"first({agent_location_state})",
-    agent_referer_label = s"first({agent_referer_label})",
-    agent_referer_type = s"first({agent_referer_type})",
-    agent_os_name = s"first({agent_os_name})",
-    agent_os_version = s"first({agent_os_version})",
-    agent_browser_name = s"first({agent_browser_name})",
-    agent_browser_version = s"first({agent_browser_version})",
-    read_utm_source = s"first({read_utm_source})",
-    read_utm_medium = s"first({read_utm_medium})",
-    read_utm_campaign = s"first({read_utm_campaign})",
-    read_utm_term = s"first({read_utm_term})",
-    read_utm_content = s"first({read_utm_content})",
+    reader_id = s"first({e.`reader.id`})",
+    story_author_id = s"first({e.`story.author.id`})",
+    agent_location_country = s"first({e.`agent.location.country`})",
+    agent_source = s"first({e.`agent.source`})",
+    agent_device_type = s"first({e.`agent.device.type`})",
+    agent_location_state = s"first({e.`agent.location.state`})",
+    agent_referer_label = s"first({e.`agent.referer.label`})",
+    agent_referer_type = s"first({e.`agent.referer.type`})",
+    agent_os_name = s"first({e.`agent.os.name`})",
+    agent_os_version = s"first({e.`agent.os.version`})",
+    agent_browser_name = s"first({e.`agent.browser.name`})",
+    agent_browser_version = s"first({e.`agent.browser.version`})",
+    read_utm_source = s"first({e.`read.utm.source`})",
+    read_utm_medium = s"first({e.`read.utm.medium`})",
+    read_utm_campaign = s"first({e.`read.utm.campaign`})",
+    read_utm_term = s"first({e.`read.utm.term`})",
+    read_utm_content = s"first({e.`read.utm.content`})",
     doc_topics = s"first({d.doc_topics})",
     chapter_topics = s"first({d.chapter_topics})",
     number_of_events = count {},
     distinct_surf_pages_read = s"array_agg(DISTINCT {surf_page_read})",
     distinct_immerse_pages_read_v2 = s"array_agg(DISTINCT {immerse_page_read})",
-    is_read = (sum (s"case when {e_type} = 'surf' then 1 end")) > 0,
-    surf_time_ms = sum(s"case when {e_type} = 'surf' then coalesce({e.duration}, 0) end"),
-    immerse_time_ms = sum(s"case when {e_type} in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce({e.duration}, 0) end")
+    is_read = (sum (s"case when {e.`type`} = 'surf' then 1 end")) > 0,
+    surf_time_ms = sum(s"case when {e.`type`} = 'surf' then coalesce({e.duration}, 0) end"),
+    immerse_time_ms = sum(s"case when {e.`type`} in ('immersion', 'immersion_viewed', 'immerse_page_turn') then coalesce({e.duration}, 0) end")
   }
 )
 filter s"is_read"
@@ -128,14 +99,14 @@ join side:left chapter_pages = (
     chapter_id,
     chapter_pages
   }
-) (ana.story_id == chapter_pages.chapter_story_id && ana.page_id == chapter_pages.chapter_id && ana.story_tenant == chapter_pages.tenant)
+) (ana.`story.id` == chapter_pages.chapter_story_id && ana.`page.id` == chapter_pages.chapter_id && ana.`story.tenant` == chapter_pages.tenant)
 group {
   read_date,
   reader_id,
-  story_id,
-  story_personalisation_id,
-  page_id,
-  story_tenant,
+  `story.id`,
+  `story.personalisation.id`,
+  `page.id`,
+  `story.tenant`,
   team_id,
   story_author_id,
   agent_location_country,
@@ -188,7 +159,7 @@ derive {
   min_dcp = 0.01782918846332898,
   min_log_dee = 0.6931471805599453
 }
-join side:left ira = uc_production.aai.int_reader_accounts (ira.reader_id == met.reader_id && ira.doc_id == met.story_id && ira.personalisation_id == met.story_personalisation_id && ira.team_id == met.team_id && ira.tenant == met.story_tenant)
+join side:left ira = uc_production.aai.int_reader_accounts (ira.reader_id == met.reader_id && ira.doc_id == met.`story.id` && ira.personalisation_id == met.`story.personalisation.id` && ira.team_id == met.team_id && ira.tenant == met.`story.tenant`)
 derive {
   norm_dts = (log_dts - min_log_dts) / (max_log_dts - min_log_dts),
   norm_dcp = (dcp - min_dcp) / (max_dcp - min_dcp),
@@ -198,10 +169,10 @@ derive {
 select {
      year_day = read_date,
      met.reader_id,
-     story_id,
-     story_personalisation_id,
-     chapter_id = page_id,
-     tenant = story_tenant,
+     `story.id`,
+     `story.personalisation.id`,
+     chapter_id = `page.id`,
+     tenant = `story.tenant`,
      met.team_id,
      ira.company_key,
      story_author_id,
