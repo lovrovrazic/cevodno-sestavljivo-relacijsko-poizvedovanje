@@ -169,8 +169,8 @@ derive {
 select {
      year_day = read_date,
      met.reader_id,
-     `story.id`,
-     `story.personalisation.id`,
+     story_id = `story.id`,
+     story_personalisation_id = `story.personalisation.id`,
      chapter_id = `page.id`,
      tenant = `story.tenant`,
      met.team_id,
