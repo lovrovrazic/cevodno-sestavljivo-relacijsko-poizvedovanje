@@ -26,7 +26,7 @@ let reads_window = (
 		aggregate {
 			tenant = first e.tenant,
 			story_company_id = first e.story_company_id,
-			story_publishedVersion = first e.story_publishedVersion ?? '',
+			story_publishedVersion = (first e.story_publishedVersion) ?? '',
 			reads = s"count(distinct {e.read_id}) filter (where {e.is_read} = true)"
 		}
 	)

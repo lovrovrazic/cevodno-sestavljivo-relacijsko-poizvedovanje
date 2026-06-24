@@ -21,7 +21,7 @@ table_2 AS (
     e.story_id,
     FIRST_VALUE(e.tenant) AS tenant,
     FIRST_VALUE(e.story_company_id) AS story_company_id,
-    FIRST_VALUE(COALESCE(e.`story_publishedVersion`, '')) AS `story_publishedVersion`,
+    COALESCE(FIRST_VALUE(e.`story_publishedVersion`), '') AS `story_publishedVersion`,
     count(distinct e.read_id) filter (
       where
         e.is_read = true
