@@ -1,4 +1,4 @@
-prql target:sql.mysql
+prql target:sql.bigquery
 
 from (
   from uc_production.hevo.mongo_flipbooks

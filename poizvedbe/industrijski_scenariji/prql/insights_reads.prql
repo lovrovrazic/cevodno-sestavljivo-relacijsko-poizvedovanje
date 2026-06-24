@@ -1,4 +1,4 @@
-prql target:sql.mysql
+prql target:sql.bigquery
 
 let deleted_persos = (
 	from uc_production.hevo.mongo_personalisations
@@ -24,9 +24,9 @@ let reads_window = (
 		\&& e.min_timestamp < s":timestampEnd")
 	group {e.story_id, window = s"window({e.min_timestamp}, '15 MINUTES')"} (
 		aggregate {
-			tenant = s"first({e.tenant})",
-			story_company_id = s"first({e.story_company_id})",
-			story_published_version = s"first({e.story_publishedVersion})" ?? '',
+			tenant = first e.tenant,
+			story_company_id = first e.story_company_id,
+			story_publishedVersion = first e.story_publishedVersion ?? '',
 			reads = s"count(distinct {e.read_id}) filter (where {e.is_read} = true)"
 		}
 	)
@@ -58,3 +58,25 @@ let reads_total = (
 
 from rw = reads_window
 join side:left rt = reads_total (==story_id && ==windowEnd)
+join side:left t = uc_production.hevo.mongo_tenants (rw.tenant == t.name)
+group {rw.tenant, rw.story_id, rw.story_company_id, rw.story_publishedVersion, rw.windowStart, rw.windowEnd} (
+	aggregate {
+		tenantId = first t._id,
+		reads = first rt.reads,
+		readsChange = first rw.reads
+	}
+)
+select {
+	tenantName = tenant,
+	tenantId,
+  docId = story_id,
+  docTeamId = story_company_id,
+  publishedVersionId = story_publishedVersion,
+	reads,
+	readsChange,
+	windowStart,
+	windowEnd,
+	timestamp = date.now
+}
+sort {-reads}
+take 50

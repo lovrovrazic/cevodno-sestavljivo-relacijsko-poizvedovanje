@@ -333,7 +333,7 @@ table_3 AS (
             )
           ),
           0
-        ) / 1000
+        ) * 1.0 / 1000
       ),
       0
     ) AS time_spent,
@@ -403,23 +403,35 @@ met AS (
     time_spent,
     total_number_of_events,
     array_size(read_pages_array) AS number_of_read_pages,
-    (time_spent / array_size(read_pages_array)) AS dts,
-    log((time_spent / array_size(read_pages_array)) + 1) AS log_dts,
-    (array_size(read_pages_array) / chapter_pages) AS dcp_without_normalisation,
+    (time_spent * 1.0 / array_size(read_pages_array)) AS dts,
+    log(
+      (time_spent * 1.0 / array_size(read_pages_array)) + 1
+    ) AS log_dts,
+    (
+      array_size(read_pages_array) * 1.0 / chapter_pages
+    ) AS dcp_without_normalisation,
     CASE
-      WHEN (array_size(read_pages_array) / chapter_pages) > 1 THEN 1
-      ELSE (array_size(read_pages_array) / chapter_pages)
+      WHEN (
+        array_size(read_pages_array) * 1.0 / chapter_pages
+      ) > 1 THEN 1
+      ELSE (
+        array_size(read_pages_array) * 1.0 / chapter_pages
+      )
     END AS dcp_non_adjusted,
     CASE
-      WHEN (array_size(read_pages_array) / chapter_pages) > 1 THEN 1
-      ELSE (array_size(read_pages_array) / chapter_pages)
+      WHEN (
+        array_size(read_pages_array) * 1.0 / chapter_pages
+      ) > 1 THEN 1
+      ELSE (
+        array_size(read_pages_array) * 1.0 / chapter_pages
+      )
     END * log10(chapter_pages + 1) AS dcp,
     (
-      total_number_of_events / array_size(read_pages_array)
+      total_number_of_events * 1.0 / array_size(read_pages_array)
     ) AS dee,
     log(
       (
-        total_number_of_events / array_size(read_pages_array)
+        total_number_of_events * 1.0 / array_size(read_pages_array)
       ) + 1
     ) AS log_dee
   FROM
@@ -492,21 +504,21 @@ SELECT
   table_2.doc_topics,
   table_2.chapter_topics,
   (
-    (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4)
+    (table_2.log_dts - table_2._expr_4) * 1.0 / (table_2._expr_5 - table_2._expr_4)
   ) AS norm_dts,
   (
-    (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2)
+    (table_2.dcp - table_2._expr_2) * 1.0 / (table_2._expr_3 - table_2._expr_2)
   ) AS norm_dcp,
   (
-    (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0)
+    (table_2.log_dee - table_2._expr_0) * 1.0 / (table_2._expr_1 - table_2._expr_0)
   ) AS norm_dee,
   (
     (
-      (table_2.log_dts - table_2._expr_4) / (table_2._expr_5 - table_2._expr_4)
+      (table_2.log_dts - table_2._expr_4) * 1.0 / (table_2._expr_5 - table_2._expr_4)
     ) + (
-      (table_2.dcp - table_2._expr_2) / (table_2._expr_3 - table_2._expr_2)
+      (table_2.dcp - table_2._expr_2) * 1.0 / (table_2._expr_3 - table_2._expr_2)
     ) + (
-      (table_2.log_dee - table_2._expr_0) / (table_2._expr_1 - table_2._expr_0)
+      (table_2.log_dee - table_2._expr_0) * 1.0 / (table_2._expr_1 - table_2._expr_0)
     )
   ) * 100 AS engagement_score
 FROM
