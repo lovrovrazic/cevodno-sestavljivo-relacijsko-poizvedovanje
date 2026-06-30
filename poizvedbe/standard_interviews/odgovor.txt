@@ -1,0 +1,3 @@
+Q2: Poizvedba identificira dobavitelja, ki ponuja določen del po najnižji ceni znotraj specifične geografske regije.
+
+Q13: Poizvedba analizira porazdelitev strank glede na število njihovih naročil, vključno s strankami, ki niso oddale nobenega naročila.
