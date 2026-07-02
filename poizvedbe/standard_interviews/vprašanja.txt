@@ -4,3 +4,4 @@ Se ti zdi, da vrstni red vrstic v kodi naravno sledi logičnemu toku transformac
 
 Glede na to, kar si prebral, ali ta sintaksa potrebuje dodatne komentarje razvijalca, ali je 'koda sama svoja dokumentacija'?
 
+Ali je tako kodo lažje vzdrževati? Bi rekel, da pri taki kodi narediš manj napak?
