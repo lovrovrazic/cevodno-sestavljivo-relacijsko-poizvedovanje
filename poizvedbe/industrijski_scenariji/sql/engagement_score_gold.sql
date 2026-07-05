@@ -35,6 +35,7 @@ with
   ),
   gold_metrics_chapters as (
     select
+      `read.id` as read_id,
       `story.tenant` as tenant,
       `story.id` as story_id,
       `story.personalisation.id` as story_personalisation_id,
@@ -138,7 +139,7 @@ with
       and (p.deleted is null or p.deleted is false)
       and year = 2026 and month = 6 and day = 15 and tenant = 'team'
     group by
-      1, 2, 3, 4, 5
+      1, 2, 3, 4, 5, 6
     having
       is_read = true
   ),
@@ -283,7 +284,7 @@ with
       story_id,
       story_personalisation_id,
       chapter_id,
-      tenant,
+      met.tenant,
       met.team_id,
       ira.company_key,
       story_author_id,
