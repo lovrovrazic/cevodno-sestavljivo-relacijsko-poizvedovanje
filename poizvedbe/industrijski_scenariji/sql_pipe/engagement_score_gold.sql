@@ -224,10 +224,11 @@ FROM uc_production.analytics.silver
 |> ORDER BY engagement_score DESC;
 
 
-from . |> where = and as innerjoin () from select except , explode_outer is from_json case when or then else end != in extend date_format aggregate groupby first count coalesce sum distinct array_agg concat > leftjoin on explode array_distinct flatten array / + array_size * log log10 crossjoin <=> orderby desc - isnull not
+from . |> where \= and as innerjoin () select except , explode_outer is from_json case when or then else end != in extend date_format aggregate groupby first count coalesce sum distinct array_agg concat \> leftjoin on explode array_distinct flatten array / \+ array_size * log log10 crossjoin <=> orderby desc - isnull not
 
-n1 = 55
-N1 = 
+n1 = 54
+N1 = 609
+
 
 
 n2 = 
