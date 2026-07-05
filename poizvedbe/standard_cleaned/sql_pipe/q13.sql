@@ -7,12 +7,12 @@ FROM customer
    GROUP BY c_count
 |> ORDER BY custdist DESC, c_count DESC;
 
-from |> leftouterjoin on = and not like aggregate count () as groupby * orderby desc , ;
+from |> leftouterjoin on = and not like aggregate count () as groupby orderby desc , ;
 
-n1 = 18
-N1 = 27
+n1 = 17
+N1 = 26
 
-customer orders c_custkey o_custkey o_comment '%special%requests%' o_orderkey c_count custdist
+customer orders c_custkey o_custkey o_comment '%special%requests%' o_orderkey c_count custdist *
 
-n2 = 9
-N2 = 13
+n2 = 10
+N2 = 14

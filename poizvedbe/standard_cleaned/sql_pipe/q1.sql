@@ -13,12 +13,12 @@ FROM lineitem
 |> ORDER BY l_returnflag, l_linestatus;
 
 
-FROM |> WHERE <= CAST AS date AGGREGATE SUM () , * - + AVG COUNT GROUPBY ORDERBY ;
+FROM |> WHERE <= CAST AS AGGREGATE SUM () , * - + AVG COUNT GROUPBY ORDERBY ;
 
-n1 = 19
-N1 = 55
+n1 = 18
+N1 = 54
 
-lineitem l_shipdate '1998-09-02' l_quantity sum_qty l_extendedprice sum_base_price l_discount sum_disc_price l_tax sum_charge avg_qty avg_price avg_disc count_order * 1 l_returnflag l_linestatus
+date lineitem l_shipdate '1998-09-02' l_quantity sum_qty l_extendedprice sum_base_price l_discount sum_disc_price l_tax sum_charge avg_qty avg_price avg_disc count_order * 1 l_returnflag l_linestatus
 
-n2 = 19
-N2 = 29
+n2 = 20
+N2 = 30

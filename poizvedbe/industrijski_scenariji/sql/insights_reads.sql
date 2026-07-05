@@ -85,7 +85,7 @@ select
   ) as id,
   rw.tenant as tenantName,
   first(t._id) as tenantId,
-  rw.story_id AS docId,
+  rw.story_id as docId,
   rw.story_company_id as docTeamId,
   rw.story_publishedVersion as publishedVersionId,
   first(rt.reads) as reads,
@@ -108,3 +108,14 @@ order by
   reads desc
 limit 
   50
+
+
+with as () select from where = and >= . , > first coalesce count distinct filter innerjoin leftjoin on or is < groupby window having sha2 concat string current_timestamp orderby desc limit
+
+n1 = 33
+N1 = 257
+
+deleted_persos _id personalisation_id uc_production hevo mongo_personalisations deleted created '2023-03-01' docs story_id mongo_flipbooks publishedat true false reads_window tenant story_company_id story_publishedVersion read_id '' reads window start windowStart end windowEnd analytics gold e d dp story_personalisation_id dbt int_banned_ips b agent_ip ip company_id scope 'Global' null min_timestamp timestampStart timestampEnd '15 MINUTES' 0 reads_total is_read rw tenantName t tenantId docId docTeamId publishedVersionId readsChange timestamp rt mongo_tenants 50 256
+
+n2 = 62
+N2 = 206

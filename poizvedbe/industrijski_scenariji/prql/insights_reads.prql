@@ -94,3 +94,14 @@ select {
 }
 sort {-reads}
 take 50
+
+
+let = () from . filter == && >= select join \ || < group {} aggregate first ?? derive > ! , sort - take where distinct count sha2 s"" window : f""
+
+n1 = 34
+N1 = 297
+
+ deleted_persos uc_production hevo mongo_personalisations deleted true created @2023-03-01 personalisation_id _id docs mongo_flipbooks story_id reads_window e analytics gold side left d dp story_personalisation_id b dbt int_banned_ips agent_ip ip company_id story_company_id scope 'Global' null min_timestamp timestampStart timestampEnd window '15 MINUTES' tenant story_publishedVersion '' reads read_id is_read windowStart this start windowEnd end reads_total w rw rt t mongo_tenants name tenantId readsChange id 256 tenantName docId docTeamId publishedVersionId timestamp date now 50
+
+n2 = 67
+N2 = 207

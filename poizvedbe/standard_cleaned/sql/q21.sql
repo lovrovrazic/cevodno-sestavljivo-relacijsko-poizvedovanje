@@ -38,12 +38,12 @@ ORDER BY
 LIMIT 100;
 
 
-select , count () * as from where = . and > exists <> not groupby orderby desc limit ;
+select , count () as from where = . and > exists <> not groupby orderby desc limit ;
 
-n1 = 20
-N1 = 65
+n1 = 19
+N1 = 63
 
-s_name numwait supplier lineitem l1 orders nation s_suppkey l_suppkey o_orderkey l_orderkey o_orderstatus 'F' l_receiptdate l_commitdate l2 l3 s_nationkey n_nationkey n_name 'SAUDI ARABIA' 100
+* s_name numwait supplier lineitem l1 orders nation s_suppkey l_suppkey o_orderkey l_orderkey o_orderstatus 'F' l_receiptdate l_commitdate l2 l3 s_nationkey n_nationkey n_name 'SAUDI ARABIA' 100
 
-n2 = 22
-N2 = 51
+n2 = 23
+N2 = 53

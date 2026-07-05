@@ -84,3 +84,14 @@ FROM reads_window rw
      current_timestamp() AS timestamp
 |> ORDER BY reads DESC
 |> LIMIT 50
+
+ with as () from . |> where = and >= select , leftjoin innerjoin on or is < aggregate groupby first coalesce distinct count filter window extend drop > sha2 string concat current_timestamp orderby desc limit
+
+n1 = 36
+N1 = 279
+
+deleted_persos _id personalisation_id uc_production hevo mongo_personalisations deleted created '2023-03-01' docs story_id mongo_flipbooks publishedat true false reads_window tenant story_company_id story_publishedVersion read_id '' reads window start windowStart end windowEnd analytics gold e d dp story_personalisation_id dbt int_banned_ips b agent_ip ip company_id scope 'Global' null min_timestamp timestampStart timestampEnd '15 MINUTES' 0 reads_total is_read rw tenantName t tenantId docId docTeamId publishedVersionId readsChange timestamp rt mongo_tenants 50 256
+
+n2 = 62
+N2 = 198
+
