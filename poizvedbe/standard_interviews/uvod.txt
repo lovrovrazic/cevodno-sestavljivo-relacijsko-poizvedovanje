@@ -23,14 +23,14 @@ https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-qry-select
 
 3. POKAŽEŠ SHEMO: To je podatkovni model, nad katerim se izvajajo poizvedbe. Gre za klasičen sistem naročil – imamo stranke (customer), ki oddajajo naročila (orders), ta vsebujejo postavke (lineitem). Imamo tudi dobavitelje (supplier) in dele (part).
 
-4. OPOZORI NA GLSNO BRANJE IN KAZANJE POZICIJE: Med branjem te prosim, da z miško (kazalcem) ali z označevanjem besedila slediš vrsticam, ki jih v tistem trenutku bereš. Tako bom natančno videl, kam je usmerjen tvoj pogled.
+4. OPOZORI NA GLASNO BRANJE IN KAZANJE POZICIJE: Med branjem te prosim, da z miško (kazalcem) ali z označevanjem besedila slediš vrsticam, ki jih v tistem trenutku bereš. Tako bom natančno videl, kam je usmerjen tvoj pogled.
 
 Tvoja naloga je, da prebereš kodo in mi poskušaš razložiti, kaj ta poizvedba poslovno počne in kakšen bo njen končni rezultat.
 
 Prosim te, da med branjem ves čas razmišljaš na glas. Povej mi vse, kar ti roji po glavi – 'Zdaj gledam to vrstico, zdi se mi, da dela to, ampak me bega tisti pogoj...' – resnično me zanima tvoj nefiltriran tok misli.
 
-4. POŠLJEŠ 1. POIZVEDBO, PUSTIŠ DA UGOTOVI DELOVANJE IN NA KONCU VPRAŠANJA.
+4. POŠLJEŠ STANDARD POIZVEDBO, PUSTIŠ DA UGOTOVI DELOVANJE IN NA KONCU VPRAŠANJA.
 
-5. POŠLJEŠ 2. POIZVEDBO, PUSTIŠ DA UGOTOVI DELOVANJE IN NA KONCU VPRAŠANJA.
+5. POŠLJEŠ CEVOVOD POZVEDBO, PUSTIŠ DA UGOTOVI DELOVANJE IN NA KONCU VPRAŠANJA.
 
 6. POKAŽEŠ PRQL: Pokažeš PRQL, da se dobi še kakšen dodaten komentar.
