@@ -49,23 +49,23 @@ FROM uc_production.analytics.silver
 |> EXTEND date_format(e.`tracker.timestamp`, 'yyyy-MM-dd') AS read_date
 |> AGGREGATE
      first(d.company) AS team_id,
-     first(e.`reader.id`) AS reader_id,
-     first(e.`story.author.id`) AS story_author_id,
-     first(e.`agent.location.country`) AS agent_location_country,
-     first(e.`agent.source`) AS agent_source,
-     first(e.`agent.device.type`) AS agent_device_type,
-     first(e.`agent.location.state`) AS agent_location_state,
-     first(e.`agent.referer.label`) AS agent_referer_label,
-     first(e.`agent.referer.type`) AS agent_referer_type,
-     first(e.`agent.os.name`) AS agent_os_name,
-     first(e.`agent.os.version`) AS agent_os_version,
-     first(e.`agent.browser.name`) AS agent_browser_name,
-     first(e.`agent.browser.version`) AS agent_browser_version,
-     first(e.`read.utm.source`) AS read_utm_source,
-     first(e.`read.utm.medium`) AS read_utm_medium,
-     first(e.`read.utm.campaign`) AS read_utm_campaign,
-     first(e.`read.utm.term`) AS read_utm_term,
-     first(e.`read.utm.content`) AS read_utm_content,
+     first(`reader.id`) AS reader_id,
+     first(`story.author.id`) AS story_author_id,
+     first(`agent.location.country`) AS agent_location_country,
+     first(`agent.source`) AS agent_source,
+     first(`agent.device.type`) AS agent_device_type,
+     first(`agent.location.state`) AS agent_location_state,
+     first(`agent.referer.label`) AS agent_referer_label,
+     first(`agent.referer.type`) AS agent_referer_type,
+     first(`agent.os.name`) AS agent_os_name,
+     first(`agent.os.version`) AS agent_os_version,
+     first(`agent.browser.name`) AS agent_browser_name,
+     first(`agent.browser.version`) AS agent_browser_version,
+     first(`read.utm.source`) AS read_utm_source,
+     first(`read.utm.medium`) AS read_utm_medium,
+     first(`read.utm.campaign`) AS read_utm_campaign,
+     first(`read.utm.term`) AS read_utm_term,
+     first(`read.utm.content`) AS read_utm_content,
      first(d.doc_topics) AS doc_topics,
      first(d.chapter_topics) AS chapter_topics,
      count(*) AS number_of_events,
@@ -87,7 +87,7 @@ FROM uc_production.analytics.silver
          WHEN e.type = 'immersion'
            OR e.type = 'surf'
            OR (e.type = 'surf_start' AND e.`page.id` = 'END')
-           THEN e.`page.id`
+           THEN `page.id`
        END
      ) AS distinct_surf_pages_read,
      array_agg(
@@ -95,21 +95,21 @@ FROM uc_production.analytics.silver
          WHEN e.type = 'immersion_start'
            OR e.type = 'immerse_page_turn'
            THEN concat(
-             e.`page.id`,
+             `page.id`,
              '_',
-             coalesce(e.`page.immerse_page_group_id`, 'unknown'),
+             coalesce(`page.immerse_page_group_id`, 'unknown'),
              '_',
-             coalesce(e.`page.immerse_page_index`, 'unknown')
+             coalesce(`page.immerse_page_index`, 'unknown')
            )
        END
      ) AS distinct_immerse_pages_read_v2,
      coalesce(count(CASE WHEN e.type = 'surf' THEN 1 END) > 0, false) AS is_read
    GROUP BY
-     e.`read.id`,
-     e.`story.tenant`,
-     e.`story.id`,
-     e.`story.personalisation.id`,
-     e.`page.id`,
+     `read.id`,
+     `story.tenant`,
+     `story.id`,
+     `story.personalisation.id`,
+     `page.id`,
      read_date
 |> WHERE is_read = true
 |> AS ana
