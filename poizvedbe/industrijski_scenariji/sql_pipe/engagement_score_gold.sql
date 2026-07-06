@@ -1,7 +1,7 @@
 -- create or replace table uc_production.analytics.engagement_score_gold
 -- using delta
 -- partitioned by (year_day)
--- as
+-- as (
 SET use_cached_result = false;
 FROM uc_production.analytics.silver
 |> WHERE year = 2026 and month = 6 and day = 15 and tenant = 'team'
@@ -222,3 +222,4 @@ FROM uc_production.analytics.silver
      norm_dee,
      engagement_score
 |> ORDER BY engagement_score DESC;
+-- )
