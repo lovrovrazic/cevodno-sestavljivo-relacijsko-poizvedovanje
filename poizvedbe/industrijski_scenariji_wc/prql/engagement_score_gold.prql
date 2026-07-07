@@ -1,0 +1,243 @@
+from (
+  from uc_production.hevo.mongo_flipbooks
+  filter (deleted == false)
+  select {
+    id = _id,
+    title,
+    created,
+    company,
+    tenant_name = __turtl__tenant_name,
+    doc_topics = s"from_json({topics}, 'array<string>')",
+    publishedpages,
+    chapter_from_json = case [
+      publishedpages == '[]' || publishedpages == null
+        \=> s"from_json({pages}, 'array<struct<_id:string, topics:array<string>>>')",
+      true => s"from_json({publishedpages}, 'array<struct<_id:string, topics:array<string>>>')"
+    ]
+  }
+)
+into cfj
+from cfj
+derive {
+  chapter = s"explode_outer({chapter_from_json})"
+}
+select !{
+  publishedpages,
+  chapter_from_json
+}
+into c
+from c
+derive {
+  chapter_id = s"{chapter}._id",
+  chapter_topics = s"{chapter}.topics"
+}
+select !{
+  chapter
+}
+into d
+from e = uc_production.analytics.silver
+filter (year == 2026 && month == 6 && day == 15 && tenant == 'team')
+join side:inner d (
+  d.id == `story.id`
+  \&& (d.chapter_id == `page.id` || d.chapter_id == null)
+)
+join side:left p = uc_production.hevo.mongo_personalisations (
+  p.flipbook == e.`story.id`
+  \&& p._id == e.`story.personalisation.id`
+)
+filter (
+  e.`page.id` != 'COOKIE'
+   \&& (p.deleted == null || p.deleted == false)
+)
+join side:left bi = uc_production.dbt.int_banned_ips (
+  bi.ip == e.`agent.ip`
+  \&& (bi.company_id == e.`story.company.id` || bi.scope == 'Global')
+)
+filter bi.ip == null
+derive {
+  read_date = s"date_format({e.`tracker.timestamp`}, 'yyyy-MM-dd')",
+  surf_page_read = case [
+    e.`type` == 'immersion' || e.`type` == 'surf' || (e.`type` == 'surf_start' && e.`page.id` == 'END') => e.`page.id`
+  ],
+  immerse_page_read = case [
+    e.`type` == 'immersion_start'
+    \|| e.`type` == 'immerse_page_turn'
+      \=> s"concat(
+        \{`page.id`},
+        \'_',
+        \coalesce({e.`page.immerse_page_group_id`}, 'unknown'),
+        \'_', coalesce({e.`page.immerse_page_index`}, 'unknown')
+      \)"
+  ]
+}
+group {
+  e.`read.id`,
+  e.`story.tenant`,
+  e.`story.id`,
+  e.`story.personalisation.id`,
+  e.`page.id`,
+  read_date
+} (
+  aggregate {
+    team_id = first d.company,
+    reader_id = first e.`reader.id`,
+    story_author_id = first e.`story.author.id`,
+    agent_location_country = first e.`agent.location.country`,
+    agent_source = first e.`agent.source`,
+    agent_device_type = first e.`agent.device.type`,
+    agent_location_state = first e.`agent.location.state`,
+    agent_referer_label = first e.`agent.referer.label`,
+    agent_referer_type = first e.`agent.referer.type`,
+    agent_os_name = first e.`agent.os.name`,
+    agent_os_version = first e.`agent.os.version`,
+    agent_browser_name = first e.`agent.browser.name`,
+    agent_browser_version = first e.`agent.browser.version`,
+    read_utm_source = first e.`read.utm.source`,
+    read_utm_medium = first e.`read.utm.medium`,
+    read_utm_campaign = first e.`read.utm.campaign`,
+    read_utm_term = first e.`read.utm.term`,
+    read_utm_content = first e.`read.utm.content`,
+    doc_topics = first d.doc_topics,
+    chapter_topics = first d.chapter_topics,
+    number_of_events = count {},
+    distinct_surf_pages_read = s"array_agg(distinct {surf_page_read})",
+    distinct_immerse_pages_read_v2 = s"array_agg(distinct {immerse_page_read})",
+    is_read = (sum (s"case when {e.`type`} = 'surf' then 1 end")) > 0,
+    surf_time_ms = sum(s"case when {e.`type`} = 'surf' then coalesce({e.duration}, 0) end"),
+    immerse_time_ms = sum (
+      s"case
+        \when {e.`type`} in ('immersion', 'immersion_viewed', 'immerse_page_turn')
+          \tthen coalesce({e.duration}, 0)
+      \end")
+  }
+)
+filter s"is_read"
+into ana
+from ana
+join side:left chapter_pages = (
+  from (s"""
+    SELECT 
+      tenant,
+      id AS chapter_story_id,
+      explode(num_all_pages_per_surf) AS (chapter_id, chapter_pages)
+    FROM uc_production.default.doc_features
+  """)
+  select {
+    tenant,
+    chapter_story_id,
+    chapter_id,
+    chapter_pages
+  }
+) (
+  ana.`story.id` == chapter_pages.chapter_story_id
+  \&& ana.`page.id` == chapter_pages.chapter_id
+  \&& ana.`story.tenant` == chapter_pages.tenant
+)
+group {
+  read_date,
+  reader_id,
+  `story.id`,
+  `story.personalisation.id`,
+  `page.id`,
+  `story.tenant`,
+  team_id,
+  story_author_id,
+  agent_location_country,
+  agent_source,
+  agent_device_type,
+  agent_location_state,
+  agent_referer_label,
+  agent_referer_type,
+  agent_os_name,
+  agent_os_version,
+  agent_browser_name,
+  agent_browser_version,
+  read_utm_source,
+  read_utm_medium,
+  read_utm_campaign,
+  read_utm_term,
+  read_utm_content,
+  doc_topics,
+  chapter_topics,
+  chapter_pages.chapter_pages
+} (
+  aggregate {
+    read_pages_array = s"array_distinct(flatten(flatten(array(
+      \array_agg({distinct_surf_pages_read}),
+      \array_agg({distinct_immerse_pages_read_v2})
+    \))))",
+    time_spent = ((sum ((surf_time_ms ?? 0) + (immerse_time_ms ?? 0) ?? 0)) / 1000) ?? 0,
+    total_number_of_events = sum number_of_events
+  }
+)
+derive {
+  number_of_read_pages = s"array_size({read_pages_array})"
+}
+derive {
+  dts = time_spent / number_of_read_pages,
+  log_dts = s"log({dts} + 1)",
+  dcp_without_normalisation = number_of_read_pages / chapter_pages.chapter_pages,
+  dcp_non_adjusted = case [
+    dcp_without_normalisation > 1 => 1,
+    true => dcp_without_normalisation
+  ],
+  dcp = dcp_non_adjusted * s"log10({chapter_pages.chapter_pages} + 1)",
+  dee = total_number_of_events / number_of_read_pages,
+  log_dee = s"log({dee} + 1)"
+}
+into met
+from met
+derive {
+  max_log_dts = 13.025439534395558,
+  max_dcp = 1.9138138523837167,
+  max_log_dee = 10.238959288823757,
+  min_log_dts = 0,
+  min_dcp = 0.01782918846332898,
+  min_log_dee = 0.6931471805599453
+}
+join side:left ira = uc_production.aai.int_reader_accounts (
+  ira.reader_id == met.reader_id
+  \&& ira.doc_id == met.`story.id`
+  \&& ira.personalisation_id == met.`story.personalisation.id`
+  \&& ira.team_id == met.team_id
+  \&& ira.tenant == met.`story.tenant`
+)
+derive {
+  norm_dts = (log_dts - min_log_dts) / (max_log_dts - min_log_dts),
+  norm_dcp = (dcp - min_dcp) / (max_dcp - min_dcp),
+  norm_dee = (log_dee - min_log_dee) / (max_log_dee - min_log_dee),
+  engagement_score = (norm_dts + norm_dcp + norm_dee) * 100
+}
+select {
+     year_day = read_date,
+     met.reader_id,
+     story_id = `story.id`,
+     story_personalisation_id = `story.personalisation.id`,
+     chapter_id = `page.id`,
+     tenant = `story.tenant`,
+     met.team_id,
+     ira.company_key,
+     story_author_id,
+     agent_location_country,
+     agent_source,
+     agent_device_type,
+     agent_location_state,
+     agent_referer_label,
+     agent_referer_type,
+     agent_os_name,
+     agent_os_version,
+     agent_browser_name,
+     agent_browser_version,
+     read_utm_source,
+     read_utm_medium,
+     read_utm_campaign,
+     read_utm_term,
+     read_utm_content,
+     doc_topics,
+     chapter_topics,
+     norm_dts,
+     norm_dcp,
+     norm_dee,
+     engagement_score
+}
+sort {-engagement_score}

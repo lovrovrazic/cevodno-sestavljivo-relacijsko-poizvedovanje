@@ -1,0 +1,94 @@
+let deleted_persos = (
+	from uc_production.hevo.mongo_personalisations
+	filter (deleted == true && created >= @2023-03-01)
+	select personalisation_id = _id
+)
+
+let docs = (
+	from uc_production.hevo.mongo_flipbooks
+	filter (deleted == false && created >= @2023-03-01)
+	select story_id = _id
+)
+
+let reads_window = (
+	from e = uc_production.analytics.gold
+	join side:left d = docs (== story_id)
+	join side:left dp = deleted_persos (e.story_personalisation_id == dp.personalisation_id)
+	join side:left b = uc_production.dbt.int_banned_ips
+		\(e.agent_ip == b.ip && (b.company_id == e.story_company_id || b.scope == 'Global'))
+	filter (
+		\dp.personalisation_id == null
+		\&& b.ip == null && e.min_timestamp >= s":timestampStart"
+		\&& e.min_timestamp < s":timestampEnd"
+	)
+	group {e.story_id, window = s"window({e.min_timestamp}, '15 MINUTES')"} (
+		aggregate {
+			tenant = first e.tenant,
+			story_company_id = first e.story_company_id,
+			story_publishedVersion = (first e.story_publishedVersion) ?? '',
+			reads = s"count(distinct {e.read_id}) filter (where {e.is_read} = true)"
+		}
+	)
+	derive {
+		windowStart = s"{this.window}.start",
+		windowEnd = s"{this.window}.end",
+	}
+	filter reads > 0
+	select !{this.window}
+)
+
+let reads_total = (
+	from  w = reads_window
+	select {story_id, windowEnd}
+	join side:left e = uc_production.analytics.gold (==story_id)
+	join side:left dp = deleted_persos (e.story_personalisation_id == dp.personalisation_id)
+	join side:left b = uc_production.dbt.int_banned_ips
+		\(e.agent_ip == b.ip && (b.company_id == e.story_company_id || b.scope == 'Global'))
+	filter (
+		\dp.personalisation_id == null
+		\&& b.ip == null
+		\&& e.min_timestamp < w.windowEnd
+		\&& e.is_read == true
+	)
+	group {w.story_id, w.windowEnd} (
+		aggregate {
+			reads = s"count(distinct {e.read_id})"
+		}
+	)
+)
+
+from rw = reads_window
+join side:left rt = reads_total (==story_id && ==windowEnd)
+join side:left t = uc_production.hevo.mongo_tenants (rw.tenant == t.name)
+group {
+	rw.tenant,
+	rw.story_id,
+	rw.story_company_id,
+	rw.story_publishedVersion,
+	rw.windowStart,
+	rw.windowEnd
+} (
+	aggregate {
+		tenantId = first t._id,
+		reads = first rt.reads,
+		readsChange = first rw.reads
+	}
+)
+derive {
+	id = f"{tenant}{story_id}{story_publishedVersion}{windowStart}{windowEnd}"
+}
+select {
+	id = s"sha2({id}, 256)",
+	tenantName = tenant,
+	tenantId,
+ 	docId = story_id,
+ 	docTeamId = story_company_id,
+ 	publishedVersionId = story_publishedVersion,
+	reads,
+	readsChange,
+	windowStart,
+	windowEnd,
+	timestamp = date.now
+}
+sort {-reads}
+take 50

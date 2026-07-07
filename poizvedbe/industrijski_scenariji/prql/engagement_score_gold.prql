@@ -183,7 +183,7 @@ derive {
     dcp_without_normalisation > 1 => 1,
     true => dcp_without_normalisation
   ],
-  dcp = dcp_non_adjusted * s"log10({chapter_pages.chapter_pages}+1)",
+  dcp = dcp_non_adjusted * s"log10({chapter_pages.chapter_pages} + 1)",
   dee = total_number_of_events / number_of_read_pages,
   log_dee = s"log({dee} + 1)"
 }
